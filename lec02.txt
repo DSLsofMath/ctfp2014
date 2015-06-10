@@ -1,0 +1,328 @@
+Lecture 2: Categories
+---------------------
+
+Preliminaries
+-------------
+
+Preorders as first-order theories
+
+A first-order theory is one expressed in the language of first-order
+logic, i.e. using the logical connectives, the forall and exists
+quantifiers ranging over the entire universe of discourse, the identity
+symbol, and function and relation symbols specific to the theory,
+together with first-order axioms about these function and relation
+symbols.  
+
+As an example, consider the language of preorders.  It contains, in its
+simplest form, one symbol: "[=" (ASCII rendition of a \sqsubseteq").
+There are two axioms:
+
+1.  reflexivity:
+        forall x x [= x 
+
+2.  transitivity:
+        forall x forall y forall z x [= y & y [= z => x [= z
+
+A "preorder" is a model of this theory.  Usually, that means a set
+together with a set-theoretical relation on it, which is reflexive and
+transitive.
+
+The typical example is "objects with prices", and we have x [= y if x is
+cheaper than y.
+
+But there are also atypical examples, such as SET, when the variables
+range over all sets, and we have x [= y when x \subseteq y.  There is
+no problem with the fact that this universe of discourse is very big;
+after all, it is the same as that of Zermelo-Frenkel set theory, which
+is also a first-order theory.  We do not, for example, need to say
+that the universe of discourse forms a class (in Gödel-Von
+Neumann-Bernays sense), because first-order theories are independent
+of specific formalizations of the notion of "collection".
+
+The notion of set inclusion does not seem appropriate to compare
+preorders, because the structure "is thrown away".  We would prefer to
+say that a preorder is smaller than another one if it can be embedded
+in it, for example, if there exists an injective mapping from it to
+the other one _preserving_the_order_, i.e., a monotonic injective
+mapping.
+
+Notice that now we have another atypical example, call it PRE:
+variables ranging over preorders, and x [= y if there exists an
+injective mapping from preorder x to preorder y.  This is the level at
+which, in general, we need to be more rigorous.  The preorder SET
+might not be an individual in this universe of discourse, depending on
+how generously we can afford to interpret "mapping".  PRE itself,
+although a preorder, will almost certainly not appear either.
+
+
+Categories
+----------
+Category theory is usually presented as a two-sorted first-order
+theory.
+
+    Two sorts: objects and arrows (also called morphisms).
+
+    Two total operations on arrows, src and tgt, relating them to objects:
+
+        For every arrow f, src f and tgt f are objects, called the "source"
+        and the "target" of f, respectively.  We shall use the notation f :
+        A -> B for src f = A and tgt f = B.
+
+    A partial operation on arrows, o.  
+
+       If f : A -> B and g : B -> C, then  g o f is defined and
+       denotes an arrow A -> C.
+
+    A total operation on objects, relating them to special arrows:
+
+       For every object A, id_A is an arrow A -> A.
+
+    Finally, we have the following axioms:
+
+       forall f : A -> B    f o id_A = id_B o f = f
+
+       forall f : A -> B, g : B -> C, h : C -> D    
+          h o (g o f) = (h o g) o f
+
+A "category" is a model of this theory.
+
+(End of definition)
+
+Therefore, in order to define a category one needs to specify the
+objects, the arrows, the src, tgt, o, and id operations, and to show
+that the axioms are satisfied.
+
+Remark: we can identify objects with identity arrows and obtain a
+single-sorted first-order theory.
+
+Examples
+--------
+
+There are many examples (Hutton: "Almost anything can be viewed as a
+category"), most of which are of one of four kinds:
+
+1.  Object variables ranging over "all" sets
+
+    1.1  FUN (also called SET or ENS): total functions
+
+         objects variables denote sets
+         arrow variables denote total (typed) functions
+         src and tgt are the source and targets of the functions
+         composition is function composition: 
+              h = g o f <=> h x = g (f x)
+         identity arrows are identity functions
+
+    1.2  PAR: partial functions
+
+         objects: sets
+         arrows: partial (typed) functions
+         src and tgt are the source and targets of the functions
+         composition is partial function composition: 
+             h = g o f <=> for all x, if f defined at x and g defined
+                        at f x, then h defined at x and h x = g (f x)
+         id: identity functions
+
+    1.3  REL: relations
+
+         objects: sets
+         arrows: (typed) relations
+
+         composition: 
+             if R : A -> B, S : B -> C then
+                a (S o R) c <=> exists b in B  a R b and b S c
+         id: identity functions
+
+         Note that when the relations are functions, relation
+         composition reduces to function composition.
+
+    Negative examples:
+
+    1.1'  untyped functions
+
+    1.2'  untyped relations
+
+2.  Object variables ranging over sets with a given structure
+         
+    2.1 MON
+
+        objects: monoids
+        arrows: monoid homomorphisms
+        src and tgt are the source and targets of the homomorphism
+        composition: function composition
+        id: identity function
+
+    2.2 PRE
+
+        objects: preorders
+        arrows: monotonic functions
+
+    2.3 TOP
+
+        objects: sets with a topology
+        arrows: continuous functions
+
+    2.4 CAT
+
+        objects: categories
+        arrows: functors
+
+3. Object variables or arrow variables range over elements of a set
+
+    3.1 discrete category
+       
+        only identity arrows
+
+        remark: every set can therefore be seen as a category
+
+    3.2 preorder
+
+        for every pair (A, B) only one arrow A -> B
+
+        A -> B can be interpreted as A [= B
+
+        in a preorder, if f : A -> B and g : B -> A, then A ~ B
+
+    3.3 monoid
+
+        only one object
+
+    3.4 group
+
+        only one object, all arrows are isomorphisms        
+
+    Negative examples: take an operation that is not associative, such
+    as Float with + or *
+
+
+Remark (Flondor): category generalizes sets, order, structure
+
+4.  Categories out of categories
+
+    A, B, C are given categories, we shall use a, b, c... to range over
+    objects
+
+    4.1 Full subcategory of C given by X
+
+        Given any collection X of objects of C
+
+        objects: Obj C = X
+
+        arrows:  if a in X and b in X and f : a -> b in C, 
+                 then f : a -> b in X
+
+        composition, identities given by C
+
+    4.2 Subcategory of C given by X
+
+        Given any collection X of arrows of C, closed under composition
+        and "identities"
+
+        objects: for any f in X, src f and tgt f are objects in X
+
+        arrows:  X
+
+        src, tgt, composition, identities given by C
+
+
+Using the language of categories
+--------------------------------
+
+Most mathematicians would agree that the study of axiomatically given
+structures, such as preorders, groups, or fields, is a major part of
+mathematics (some might even say that it's the only part).
+
+One of the leading ideas of category theory is expressed by Mac Lane in
+the following way:
+
+    "Category theory asks of every type of Mathematical object: 'What
+    are the morphisms?'; it suggests that these morphisms should be
+    described at the same time as the objects."
+        (from "Categories for the Working Mathematician", second
+        edition, p. 30)
+
+An explanation of this is that, besides the "direct" consequences of the
+axioms that define a structure, it usually fruitful to discuss
+combinations of such structures (for example, products of preorders,
+groups, etc.) or substructures (e.g. ideals of a ring).  Category theory
+suggests that these combinations be described in terms of the morphisms
+of structures, instead of in terms of their set-theoretical
+construction.  
+
+In general, the "richer" the structure, the more results can be obtained
+by "staying within the structure", i.e., operating at the level of the
+associated category, with arrows given by the structure morphisms.
+"Poorer" structures force one quickly to resort to other kinds of
+maps or other structures.
+
+For example, quotient groups can be constructed as sets whose elements
+are left cosets, or categorically characterized in terms of group
+homomorphisms.  This characterization turns out to be simpler (precisely
+because the elements of the quotient do not need to be spelled out), but
+it is also something that can be potentially transferred to other
+categories as well.
+
+Using categorical language
+--------------------------
+
+As an example for the advantages of expressing concepts in categorical
+terms instead of set-theoretical ones, consider the notion of "maximal
+element in a preorder".  
+
+Consider a preorder (X, [=).  An element m of X is said to be maximal if
+
+    forall x  x [= m
+
+Some preorders may not have maximal elements (take a discrete preorder
+for an immediate example); others may have a unique maximal element (P
+A, the powerset of A, has A as maximal element under inclusion); yet
+others may have several (P A - A, for example).
+
+If m and m' are both maximal, then they are _equivalent_: 
+
+    m [= m' & m' [= m => m ~ m'
+
+Let us now rephrase this notion in categorical terms.  A preorder is, as
+we have seen, a special sort of category, so the translation is trivial:
+
+Let X be a preorder category.  An object m is said to be maximal if
+
+    forall x : Obj X   there exists an arrow x -> m
+
+If m and m' are both maximal, then they are _isomorphic_:
+
+    m and m' maximal
+=>    { definition of maximal } 
+    exist f : m -> m' and g : m' -> m
+=>    { since in a preorder h : a -> b, k : a -> b => h = k }
+    g o f = id_m and f o g = id_m'
+
+How do we transfer this notion to other categories, such as FUN?
+
+First attempt:
+
+Let C be a category.  An object m is said to be maximal if
+
+    forall x : Obj C   there exists an arrow x -> m
+
+In the case of FUN, this makes every object except the empty set
+maximal.  This is no good: obviously, we then have non-isomorphic
+maximal objects.
+
+Examining the proof above, we see that the essential condition was the
+unicity of arrows associated to the maximal elements.  We do not need
+uniqueness of arrows in general: we can make the proof go through by
+assuming only uniqueness of arrows which target the maximal element.
+Thus, we have, switching to standard terminology ("terminal" instead of
+"maximal"):
+
+Definition:  Let C be a category.  An object 1 is said to be _terminal_
+if 
+
+    forall x : Obj C there exists a _unique_ arrow x -> 1
+
+The proof above shows that any two terminal objects are isomorphic.
+
+The terminal objects in FUN are singleton sets, in PAR and REL there is
+only one terminal object, the empty set.  These are not particularly
+"large" sets, which contradicts our intuition from preorders.  What
+happened?

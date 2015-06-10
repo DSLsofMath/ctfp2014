@@ -1,0 +1,306 @@
+Lecture 9: Applications
+-----------------------
+
+We have seen that the equation 
+
+    x . L in = psi x
+
+has a unique solution if L is a left adjoint:
+
+    x . L in = psi x    <=>    x = phi' (fold (phi (psi (phi' id))))
+
+Before going on to the examples, it is instructive to examine the
+types of the elements involved:
+
+    C, D categories, X : Obj D
+    F : C -> C  the endofunctor giving rise to the initial F-algebra
+    in : F uF -> uF
+    L : C -> D 
+    x : L uF -> X  the solution
+    psi_Y : { L Y -> X } -> { L (F Y) -> X }
+    R : D -> C
+    phi_(Y, Z) : { L Y -> Z } -> { Y -> R Z }
+    phi'_(Y, Z) : { Y -> R Z } -> { L Y -> Z }
+    fold_Y : { F Y -> Y } -> { uF -> Y }
+    
+Therefore:
+
+    phi' (fold (phi (psi (phi' id)))) : L uF -> X
+  =>  { in the type of phi' Y := uF and Z := X }
+    fold (phi (psi (phi' id))) : uF -> R X
+  =>  { in the type of fold Y := R Y }
+    phi (psi (phi' id)) : F (R X) -> R X
+  =>  { in the type of phi Y := R X and Z := X }
+    psi (phi' id) : L (F (R X)) -> X
+  =>  { in the type of psi Y := R X }
+    phi' id : L (R X) -> X
+  =>  { in the type of phi' Y := R X and Z := X }
+    id : R X -> R X
+
+Reading this backwards, we have that the unique solution is
+constructed by starting with the identity on R X, transposing it via
+the adjunction to create an argument suitable for psi, which gives us
+an L o F o R algebra, which we transform into an F-algebra via phi.
+This is given to the fold, and the result is translated to the
+solution via phi'.
+
+Thus, one can see adjoint folds as offering a principled way of
+translating recursion schemes into folds, i.e., of solving in general
+the problem we solved in an ad-hoc way in lecture 5 for paramorphisms
+(motivated by the factorial function).
+
+Example 1: L = Id
+----------
+
+With L = Id, we have R = Id, phi = id.  We can use therefore the
+calculation from last lecture to show that Mendler-style folds
+
+    x . in = psi x
+
+have a unique solution:
+
+    x . in = psi x
+  <=>
+    x = phi' (fold (phi (psi (phi' id))))
+  <=>  { phi' = id, phi = id, phi' id = id }
+    x = fold (psi id)
+
+Example 2: L = Dup, mutual recursion
+----------
+
+   Dup : C -> C x C
+   Dup X = (X, X)
+   Dup f = (f, f)
+
+Equations of the type
+
+   x . Dup in = psi x
+
+have solutions pairs of arrows (x1 : uF -> X1, x2 : uF -> X2) and can
+be used to describe mutually recursive functions, since x1 and x2 are
+"simultaneously" defined.
+
+Dup is a left adjoint if we can find a functor R and phi such that
+
+   phi : { f : Dup X -> Y } -> { g : X -> R Y }
+<=>  { def Dup, C x C, arrows in C x C are pairs of arrows in C }
+   phi : { (f1 : X -> Y1, f2 : X -> Y2) } -> { g : X -> R (Y1, Y2) }
+<=   { definition of product }
+   R (Y1, Y2) = Y1 x Y2     and
+   phi (f1, f2) = f1 ^ f2
+
+Exercise: phi is natural in X and Y and so is its inverse
+
+   phi' f = (fst . f, snd . f)
+
+Therefore, the machinery from the previous lecture does apply, and we have
+   x . Dup in = psi x
+<=>  { x = (x1, x2) arrows in C x C are pairs of arrows in C }
+   (x1, x2) . Dup in = psi (x1, x2)
+<=>  { adjoint folds }
+   (x1, x2) = phi' (fold (phi (psi (phi' id))))
+<=>  { phi' id = (fst, snd) }
+   (x1, x2) = phi' (fold (phi (psi (fst, snd))))
+<=>  { psi (fst, snd) is a pair of arrows }
+   (x1, x2) = phi' (fold (phi (f1, f2))) where
+     (f1, f2) = psi (fst, snd)
+<=>  { definition of phi }
+   (x1, x2) = phi' (fold (f1 ^ f2)) where
+     (f1, f2) = psi (fst, snd)
+<=>  { definition of phi' }
+   (x1, x2) = (fst . fold (f1 ^ f2), snd . fold (f1 ^ f2)) where
+     (f1, f2) = psi (fst, snd)
+<=>  { equality in C x C }
+   x1 = fst . fold (f1 ^ f2)  and
+   x2 = snd . fold (f1 ^ f2)  where
+     (f1, f2) = psi (fst, snd)
+   
+The types of f1 and f2 are 
+
+   f1 : F (X1 x X2) -> X1
+   f2 : F (X1 x X2) -> X2
+
+so f1 ^ f2 : F (X1 x X2) -> X1 x X2.  In other words, the solution x
+is constructed as a fold of an algebra with carrier X1 x X2.
+
+
+Application:
+
+   even 0 = true
+   even (S n) = odd n
+=>
+   even . (0 v S) = true v odd
+
+Similarly
+
+   odd . (0 v S)  = false v even
+
+(I have identified elements and arrows from 1)
+
+Therefore
+
+    (even, odd) . Dup (0 v S) = (true v odd, false v even)
+
+Take
+
+    psi (g1, g2) = (true v g2, false v g1)
+
+we obtain that (even, odd) are the unique solutions of the adjoint
+fold equation
+
+    (even, odd) . Dup (0 v S) = psi (even, odd)
+
+Using the formulas above, we have
+
+    (f1, f2) = psi (fst, snd) = (true v snd, false v fst)
+    even = fst . fold (f1 ^ f2)
+    odd = snd . fold (f1 ^ f2)
+
+    f1 ^ f2
+  =  { definitions above }
+    (true v snd ^ (false v fst)
+  =  { exercise: (a v b) ^ (c v d) = (a ^ c) v (b ^ d) }
+    (true ^ false) v (snd ^ fst)
+  =  { snd ^ fst = swap }
+    (true ^ false) v swap
+
+Recall that for e v g : 1 + X -> X, we have
+
+    fold (e v g) : Nat -> X
+    fold (e v g) n = g^n e
+
+Therefore, we obtain
+
+    even n = fst (swap^n (true, false))
+    odd n  = snd (swap^n (true, false))
+
+To find out whether n is even, swap (true, false) n times and take the
+first element of the result.
+
+Example 3: L = Dup, paramorphism
+---------
+
+Recall from lecture 5 the problem of defining paramorphisms such as
+the factorial:
+
+              in
+        T <-------- F T
+        |            |
+  para f|            | F (id ^ para f)
+        |            |
+        v            v          
+        X <-------- F (T x X)
+              f
+
+We wanted to show that for every f : F (T x X) -> X there exists a
+unique para f : T -> X such that para f . in = f . F (id ^ para f).
+
+We can obtain an equivalent solution to the one in lecture 8 by
+observing that the above diagram commutes if and only if the diagram
+
+                     (in, in)
+            (T, T) <---------- (F T,  F T)
+              |                    |
+ (id, para f) |                    | (F id, F (id ^ para f))
+              |                    |
+              v                    v          
+            (T, X) <---------- (F T,  F (T x X))
+                     (in, f)
+
+commutes (we have just glued an obviously commuting square alongside
+the old one).
+
+Therefore, para f is defined by the original equation if and only if
+the equation
+
+    (id, para f) . Dup in = psi (id, para f)
+where
+    psi (h1, h2) = (in, f) o (F h1, F (id ^ h2))
+
+has a unique solution.  But we have just seen above that the equation
+
+    (x1, x2) . Dup in = psi (x1, x2)
+
+has a unique solution.  The question is: with the psi just defined, do
+we obtain x1 = id?
+
+This is, indeed, the case, and therefore paramorphisms can be defined
+as adjoint folds, using the trick of considering them in mutual
+recursion with the identity function.
+
+Exercise: work out the solution of the adjoint fold equation and show
+that x1 = id.
+
+Example 4: L = (x A)
+----------
+
+Solutions to 
+
+    x . (in x id) = psi x
+
+are arrows x : uF x A -> X and can be used to describe recursion with
+a parameter (for example, an accumulation parameter for improving the
+efficiency).
+
+The equation has a unique solution if we can find R and phi such that
+
+    phi : { X x A -> Y } -> { X -> R Y }
+
+Take R Y = Y ^ A
+
+    phi = curry, phi' = uncurry
+
+Therefore, L does have a right adjoint, and we can write the unique
+solution as follows:
+
+    x . (in x id_A) = psi x
+  <=>  { adjoint folds }
+    x = phi' (fold (phi (psi (phi' id))))
+  <=>  { phi' = uncurry, phi = curry, phi' id = uncurry id = apply }
+    x = uncurry (fold (curry (psi apply)))
+
+The solution x is obtained from an algebra with carrier X^A:
+
+    id : X^A -> X^A
+    uncurry id = apply : X^A x A -> X
+    psi apply : (F X^A) x A -> X
+    curry (psi apply) : F X^A -> X^A
+    fold (curry (psi apply)) : uF -> X^A
+    uncurry (fold (curry (psi apply))) : uF x A -> X
+
+Exercise: work out the solution for
+
+    rev : List X x List X -> List X
+    rev (Nil, ys) = ys
+    rev (Cons (x, xs), ys) = rev (xs, Cons (x, ys))
+
+Example 5: L G = G A, generalized folds
+----------
+
+L is the "projection onto A" functor from the example in lecture 8.
+
+    A _fixed_
+
+    L : FUN^FUN -> FUN
+    L G = G A
+    L alpha = alpha_A
+
+Solutions to the equation
+
+    x . in_A = psi x
+
+have the type x : (u F) A -> X and can be used to describe generalized
+folds, such as psum from lecture 8.
+
+As opposed to the previous examples, it is not obvious what R and phi
+we can find such that
+
+    phi : { f : G A -> Y } -> { alpha : G -> R Y }
+
+The source is a set of arrows in FUN, the target a set of natural
+transformations.  The type of R is FUN -> FUN^FUN, a
+functor-constructing functor.
+
+It is possible to "guess" the answer (and it is instructive to try),
+but we can do better, by introducing and applying an important result
+of elementary category theory: the Yoneda lemma.

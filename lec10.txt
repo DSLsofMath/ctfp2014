@@ -1,0 +1,345 @@
+Lecture 10
+----------
+
+The Yonneda lemma
+-----------------
+
+Consider the usual Hom functor:
+
+    Hom : C° x C -> FUN
+    Hom (X, Y) = { f : X -> Y}, Hom (h1, h2) f = h2 . f . h1
+
+We can swap the arguments and curry the result to obtain the standard
+_embedding_ of C into the category of presheaves FUN^C°:
+
+    Emb : C -> FUN^C°
+    Emb Y : C° -> FUN
+    Emb Y X = { f : X -> Y }
+    Emb Y (h : X2 -> X1) = f . h : Emb Y X1 -> Emb Y X2
+
+This functor has the following property:
+
+Prop (Yonneda lemma):  For any F : C° -> FUN and any A : Obj C, we
+    have
+
+  +------------------------------+
+  | F A ~ { alpha : Emb A -> F } |
+  +------------------------------+
+
+The set F A is isomorphic with the set of natural transformations from
+Emb A to F, and this isomorphism is natural in both A and F.
+
+Remark:
+
+    The naturality condition for an alpha : Emb A -> F is
+    
+                             alpha_X
+        X           Emb A X ---------> F X
+        ^              |                |
+      h |        (. h) |                | F h
+        |              |                |
+        |              v                v
+        Y           Emb A Y ---------> F Y
+                             alpha_Y
+    
+        alpha_Y . (. h) = F h . alpha_X
+      <=>  { extensionality }
+        for any f : X -> A   
+        alpha_Y (f . h) = F h (alpha_X f)
+-- End remark
+    
+Proof:
+
+    Let e : F A.  We need to construct a natural transformation
+
+    alpha : Emb A -> F
+
+i.e., for each X, a function
+
+    alpha_X : Emb A X -> F X
+  <=>  { definition Emb }
+    alpha_X : { f : X -> A } -> F X
+
+The key observation is that F is contravariant: F : C° -> FUN,
+therefore we have
+
+    f : X -> A   =>   F f : F A -> F X
+
+so we can take
+
+    alpha_X f = F f e
+
+Exercise: check the naturality conditions 
+    a) for alpha, 
+    b) for yon : F A -> { alpha : Emb A -> F } 
+           (yon e)_X f = F f e
+
+Now take alpha : Emb A -> F.  We want to determine an element of F A.
+
+    alpha : Emb A -> F
+  =>  { specializing for A }
+    alpha_A : Emb A A -> F A
+  <=> { definition Emb }
+    alpha_A : { f : A -> A } -> F A
+  =>  { id_A : A -> A }
+    alpha_A id_A : F A
+
+Exercise: check the naturality condition for
+    yon° : { alpha : Emb A -> F } -> F A
+    yon° alpha = alpha_A id_A
+
+We want to show that yon . yon° = id and yon° . yon = id
+
+    yon . yon° : { alpha : Emb A -> F } -> { beta : Emb A -> F }
+
+    (yon . yon°) alpha
+  =  { composition }
+    yon (yon° alpha)
+  =  { definition yon° }
+    yon (alpha_A id_A)
+  =  { definition yon }
+    beta where beta_X (f : X -> A) = F f (alpha_A id_A)
+  =  { naturality of alpha with X = A, Y = X }
+    beta where beta_X f = alpha_X (id_A . f)
+  =  { id, extensionality }
+    alpha
+
+    yon° . yon : F A
+
+    (yon° . yon) e
+  =  { composition }
+    yon° (yon e)
+  =  { definition yon° }
+    (yon e)_A id_A
+  =  { definition yon }
+    F id_A e
+  =  { functor }
+    e
+
+---- end of Yoneda lemma
+
+We return to the question of finding a right adjoint for 
+
+    L G = G A, L alpha = alpha_A
+    
+i.e, R and phi such that
+
+    phi : { f : G A -> Y } -> { alpha : G -> R Y }
+
+Let us introduce the functor
+
+    H X = { f : G X -> Y }
+
+so that we can write the type of phi
+
+    phi : H A -> { alpha : G -> R Y }
+
+The type of H is FUN° -> FUN.  Indeed
+
+    H (h : X2 -> X1) : H X1 -> H X2
+    H h f = f . G h
+  <=>  { extensionality }
+    H h = (. G h)
+
+Therefore, the Yoneda lemma tells us that
+
+    yon : H A -> { alpha : Emb A -> H }
+
+is a natural isomorphism.
+
+Fix f \in H A, i.e., f : G A -> Y.  We have
+
+    yon f : Emb A -> H
+  <=>  { pointwise }
+    (yon f)_X : Emb A X -> H X
+  <=>  { definitions, H h f = (f . G h) }
+    (f . G)_X : { h : X -> A } -> { g : G X -> Y }
+  <=>  { in FUN }
+    (f . G)_X : (X -> A) -> G X -> Y
+  <=>  { flip }
+    flip (f . G)_X : G X -> (X -> A) -> Y
+  <=>  { introducting R Y X = (X -> A) -> Y }
+    flip (f . G)_X : G X -> R Y X
+  <=>  { pointfree }
+    flip (f . G) : G -> R Y
+
+Thus, we have found
+
+    R : FUN -> FUN^FUN
+    R Y : FUN -> FUN
+    R Y X = (X -> A) -> Y
+    R Y (f : X1 -> X2) : ((X1 -> A) -> Y) -> (X2 -> A) -> Y
+    R Y f g h = g (h . f)
+
+    phi f = flip (f . G)
+
+Since both (f . G) (by the Yoneda lemma) and flip (involution) are
+natural isomorphisms, phi is a natural isomorphism.
+
+To simplify matters, we have made essential use of the properties of
+functions.  In particular, the step marked "in FUN" is not going to be
+applicable to general categories.  However, a more abstract treatment
+works in most categories of interest to us (see Hinze p. 2129).
+
+Other applications of the Yoneda lemma
+--------------------------------------
+
+1. Emb is full and faithfull and injective on objects.
+
+   Proof
+   -----
+
+   "full" means surjective on arrows, "faithfull" means injective on
+   arrows, "full and faithful" means bijective on arrows
+
+   For any X, Y : Obj C we have Emb X, Emb Y : C° -> FUN, therefore we
+   can apply the Yoneda lemma with F := Emb Y and object X to obtain
+   the isomorphism
+
+       yon : Emb Y X -> { alpha : Emb X -> Emb Y }
+   <=>  { definition Emb }
+       yon : { f : X -> Y } -> { alpha : Emb X -> Emb Y}
+
+    Since yon is an isomorphism in FUN, it is injective and
+    surjective.
+
+    For injectivity on objects, consider
+
+    Emb X = Emb Y
+  =>  { equality of functors }
+    Emb X X = Emb Y X
+  <=> { definition Emb }
+    { f : X -> X } = { g : Y -> X }
+  =>  { id_X \in { f : X -> X }, set equality }
+    id_X \in { g : Y -> X }
+  =>  { types }
+    X = Y
+
+2.  For any full and faithful functor F, we have
+
+        F X ~ F Y => X ~ Y
+
+    (the other direction is easy, it holds for all functors )
+
+    Proof:
+    ------
+
+    F full and faithfull
+  =>  { definition }
+    exists a bijection y : { f : X -> Y } -> { h : F X -> F Y }
+  =>  { bijection }
+    for all f1, f2
+    F f1 = F f2  <=>  f1 = f2 (*)
+
+    We have:
+    
+    F X ~ F Y
+  =>  { isomorphism }
+    exists h : F X -> F Y and h° : F Y -> F X s.t.
+    h o h° = id and h° o h = id
+
+    Let f = y° h and g = y° h°
+
+    We have:
+
+    F id
+  =  { F functor }
+    id
+  =  { h iso }
+    h o h°
+  =  { using f and g as above }
+    F f o F g
+  =  { F functor }
+    F (f o g)
+
+  Therefore, by (*):
+
+    f o g = id
+
+   Similarly, we obtain g o f = id.  Therefore, g = f°, and X ~ Y.
+
+   Corollary: Emb X ~ Emb Y <=> X ~ Y
+   ----------
+
+3.  Adjunctions are unique up to isomorphism.
+
+    Proof
+
+    L -| R1 and L -| R2
+
+    Then, for arbitrary X and Y we have
+
+    Emb (R1 Y) X
+  =  { definition }
+    { f : X -> R1 Y }
+  ~  { adjunction }
+    { g : L X -> Y }
+  ~  { adjunction }
+    { h : X -> R2 Y}
+  =  { definition }
+    Emb (R2 Y) X
+
+  therefore
+
+    for all X, Y
+    Emb (R1 Y) X ~ Emb (R2 Y) X
+  <=>  { definition of isomorphism for functors }
+    for all Y
+    Emb (R1 Y) ~ Emb (R2 Y)
+  <=>  { Emb is full and faithfull }
+    for all Y
+    R1 Y ~ R2 Y
+  <=>  { definition of isomorphism for functors }
+    R1 ~ R2
+
+4.  Mendler-style folds.
+
+    Recall the definining equation for Mendler-style folds:
+
+    x o in = psi x
+
+    where
+
+    F : C -> C
+    in : F uF -> uF
+    x : uF -> X
+
+    psi_Y : { f : Y -> X } -> { g : F Y -> X }
+
+    The type of psi is actually that of the natural transformations
+    that appear in Yoneda's lemma.  Indeed:
+
+    psi_Y : { f : Y -> X } -> { g : F Y -> X }
+  <=>  { definition of Emb }
+    psi_Y : Emb X Y -> { g : F Y -> X }
+  <=>  { introducing G : C° -> FUN, G Y = { g : F Y -> X } }
+    psi_Y : Emb X Y -> G Y
+  <=>  { "point-free" notation for natural transformations }
+    psi : Emb X -> G
+
+    Since G is a pre-sheaf, the conditions of the Yoneda lemma are
+    met, and we have that yon establishes an isomorphism between the
+    set G X = { g : F X -> X } of F-algebras with carrier X and the
+    set of natural transformations { alpha : Emb X -> G }, of which
+    psi is an instance.
+
+    We have:
+
+    psi x
+  =  { yon is an isomorphism }
+    yon (yon° psi) x
+  =  { definition yon° }
+    yon (psi id) x
+  =  { definition yon }
+    G x (psi id)
+  =  { definition G }
+    psi id . F x    
+
+    Therefore, we obtain an alternative proof of the result derived in
+    lecture 7.
+
+    x . in = psi x
+  <=>  { above: psi x = psi id . F X }
+    x . in = psi id . F x
+  <=>  { univ. prop. of folds }
+    x = fold (psi id)

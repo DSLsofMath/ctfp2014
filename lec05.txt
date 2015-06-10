@@ -1,0 +1,280 @@
+Lecture 5: Applications
+-----------------------
+
+2. Reflection
+
+   In Alg(F), 0_in = id_(uF)
+
+  <=>  { arrows in Alg(F), notation }
+   
+   fold in = id_(uF)
+   
+3. Fusion
+
+    For all f : (f1 : F X1 -> X1) -> (f2 : F X2 -> X2), we have
+        f . 0_f1 = 0_f1
+    <=>  { translation to C }
+
+     +----------------------------------------------------+
+     |  For all                                           |  
+     |    f1 : F X1 -> X1, f2 : F X2 -> X2, f : X1 -> X2  |
+     |  such that                                         |
+     |    f . f1 = f2 . F f                               |
+     |  we have                                           |
+     |    f . fold f1 = fold f2                           |
+     +----------------------------------------------------+
+
+Example: 
+ 
+    (n*) . sum
+  =  { definition of sum }
+    (n*) . fold (0 v plus)
+  =  { fusion, claim (n*) . (0 v plus) = f2 . F (n*) }
+    fold f2
+
+  To fulfill the claim, we need
+
+    (n*) . (0 v plus) = f2 . F (n*)
+  <=>  { definition of F }
+    (n*) . (0 v plus) = f2 . (id_1 + id_Nat x (n*))
+  <=>  { introducing e = f2 . inl, g = f2 . inl }
+    (n*) . (0 v plus) = (e v g) . (id_1 + id_Nat x (n*))
+  <=>  { v . + fusion }
+    (n*) . (0 v plus) = e v (g . (id_Nat x (n*)))
+  <=>  { v fusion }
+    0 v ((n*) . plus) = e v (g . (id_Nat x (n*)))
+  <=>  { equality of joins }
+    e = 0 and
+    g . (id_Nat x (n*)) = (n*) . plus
+  <=>  { pointwise translation }
+    e = 0 and
+    g (p, (n*) . q) = (n*) . (p + q)
+  <=   { generalizing the second argument of g, arithmetic }
+    e = 0 and
+    g (x, y) = n*x + y
+
+Therefore
+
+    (n*) . sum = fold 0 (\ x y -> n*x + y)
+
+We can now return to the question of whether "in" is an isomorphism.
+It is: this result was first published by Lambek in 1968 and is known
+as "Lambek's Lemma".
+
+First, we remark that we are looking for an arrow out : uF -> F uF.
+This does not have the proper type to be an algebra, but it does have
+the type to be a fold.
+
+    out : uF -> F uF
+<=
+    out = fold f   and f : F (F uf) -> F uF
+<=
+    out = fold (F in)
+
+We now test our candidate to see whether it is an inverse of in:
+
+    in . out
+  =  { definition out }
+    in . fold (F in)
+  =  { in . F in = in . F in; so we can apply fusion }
+    fold in
+  =  { reflection }
+    id
+
+    out . in 
+  =  { definition out }
+    fold (F in) . in
+  =  { universal property }
+    F in . F (fold (F in))
+  =  { F functor }
+    F (in . fold (F in))
+  =  { fusion and reflection, as above }
+    F id
+  =  { F functor }
+    id
+
+Therefore, we can now also give a "negative" example: the functor
+
+    F   : FUN -> FUN
+    F X = X -> Bool
+
+has no initial algebra (it has no fixed point).
+
+Type functors
+-------------
+
+We have remarked that the functor F X = 1 + A x X whose least fixed
+point is isomorphic to List A should not be confused with "map".  The
+latter is the functorial action on arrows of List.
+
+Indeed, for any "bifunctor" F : C x C -> C, the action obtained by
+associating to each A : Obj C the fixed point of F (A, _) : C -> C
+(and F f = F (id_A, f)) can be extended to a functor.  The action of
+this type functor, denoted by T_F : C -> C is therefore
+
+    T_F A = u (F (A, _))
+
+Let f : A -> B, then T_F f : T_F A -> T_F B.  We have:
+
+    T_F f : T_F A -> T_F B
+  <=  { universal property of fold }
+    T_F f = fold x where x : F (A, T_F B) -> T_F B
+  <=  { T_F B = u (F (B, _)) }
+    T_F f = fold (in . y) where y : F (A, T_F B) -> F (B, T_F B)
+  <=  { F functor }
+    T_F f = fold (in . F (f, id))
+
+Exercise: check that T_F f = fold (F (f, id) . in) preserves
+identities and composition. 
+
+Example:
+
+    F X = 1 + A x X
+
+    T_F A = List A
+
+    T_F f 
+  =  { definition T_F }
+    fold (in . F (f, id))
+  =  { in = Nil v Cons }
+    fold (Nil v Cons . F (f, id))
+  =  { definition of F }
+    fold (Nil v Cons . (id_1 + f x id))
+  =  { v . + fusion }
+    fold (Nil v (Cons . f x id))
+
+In Haskell-like notation:
+
+    map f = fold Nil (Cons . (f x id))
+  <=>  { pointwise definition }
+    map f Nil         = Nil
+    map f (Cons a as) = Cons (f a) (map f as)
+
+We can now prove the "fold . map" fusion law generically:
+
+    fold f . T_F g = fold h
+  <=>  { definition of T_F }
+    fold f . fold (in . F(g, id)) = fold h
+  <=  { fusion }
+    fold f . in . F (g, id) = h . F (id, fold f)
+  <=> { universal property of fold }
+    f . F (id, fold f) . F (g, id) = h . F (id, fold f)
+  <=> { functor }
+    f . F (g, fold f) = h . F (id, fold f)
+  <=> { functor }
+    f . F (g, id) . F (id, fold f) = h . F (id, fold f)
+  <=  { . is functional }
+    f . F (g, id) = h
+
+Therefore:
+
+      +---------------------------------------+
+      | fold f . T_F g = fold (f . F (g, id)) |
+      +---------------------------------------+
+
+Example:
+
+    fold (e v f) . map g
+  =  { fold . map fusion }
+    fold (e v f . (id_1 + g x id_A)
+  =  { v . + fusion }
+    fold (e v (f . (g x id_A)))
+  
+  In Haskell-like notation
+
+    foldr f e . map g = foldr (f . g) e
+
+  (the "f" argument of foldr is curried in Haskell).
+
+
+Paramorphisms
+-------------
+
+Recall Hinze's remark in the introduction to "Adjoint folds and
+unfolds":
+
+    Most, if not all, programs require some tweaking to be given the
+    form of a fold or an unfold and thus make them ameanable to formal
+    manipulation.  Somewhat ironically, this is in particular true of
+    the "Hello, world!" programs of functional programming: factorial,
+    the Fibonacci function, and append.
+
+(Somwhat ironically, append really is a fold, no tweaking necessary).
+
+Why is the factorial function not a fold?
+
+    fact 0        =  1
+    fact (n + 1)  =  (n + 1) * fact n
+
+    h : Nat -> X  =  fold (e v f)
+  <=>  { universal property }
+    h 0        =  e
+    h (n + 1)  =  f (h n)
+
+Assume that factorial were a fold, we would then have a function f
+such that
+
+    fact (n + 1) = f (fact n)
+
+In particular, we would have
+
+    2 = fact 2 = f (fact 1) = f 1 = f (fact 0) = fact 1 = 1
+
+Therefore, indeed, we cannot find such an f.
+
+It is easy to find a reasonable f of two arguments:
+
+    fact (n + 1) = f (n, fact n)
+
+namely 
+
+    f (x, y) = (x + 1) * y
+
+but this is not the type required for fold.
+
+We would like to extend our repertoire of recursive schemes with the
+following:
+
+              in
+        T <-------- F T
+        |            |
+  para f|            | F (id ^ para f)
+        |            |
+        v            v          
+        X <-------- F (T x X)
+              f
+
+and say: for every f : F (T x X) -> X there exists a unique 
+para f : T -> X  such that para f . in = f . F (id ^ para f).
+
+If this were true (and only then!) we could be confident that the
+function para f is well defined.  It might seem ridiculous to doubt
+the well-definedness of the factorial function, but in different
+settings, in more complicated categories or using unfamiliar functions
+f, things could be less clear.
+
+We compute:
+
+    para f . in = f . F (id ^ para f)
+  <=>  { equalitiy of pairs }
+    in ^ (para f . in) = in ^ (f . F (id ^ para f))
+  <=>  { ^ fusion, identities }
+    (id ^ para f) . in = in ^ (f . F (id ^ para f))
+  <=>  { functor, identities, universal property of ^ }
+    (id ^ para f) . in = 
+    (in . F fst . F (id ^ para f)) ^ (f . F (id ^ para f))  
+  <=>  { ^ fusion }
+    (id ^ para f) . in = ((in . F fst) ^ f) . F (id ^ para f)
+  <=>  { universal property }
+    id ^ para f = fold ((in . F fst) ^ f)
+  <=>  { universal property }
+    fst . fold ((in . F fst) ^ f) = id         and
+    snd . fold ((in . F fst) ^ f) = para f
+  <=>  { fst . (in . F fst) ^ f = in . F fst, fusion }
+    true               and
+    para f = snd . fold ((in . F fst) ^ f)
+  <=>  { logic }
+    para f = snd . fold ((in . F fst) ^ f)
+
+Indeed, the recursion scheme has a unique solution.
+

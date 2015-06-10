@@ -1,0 +1,342 @@
+Natural transformations
+------------------------
+
+Some of the constructions we have seen so far within a category also
+apply to CAT.
+
+For example, CAT has an initial object, the empty category, and a
+terminal object, the singleton category.  CAT has products, C x D, and
+coproducts, C + D.  Does CAT have exponentials?
+
+We want D^C to have as objects functors C -> D, such that we have a
+functor
+
+  Apply : D^C x C -> D
+  Apply (F, X) = F X
+
+The question is: what should the arrows of D^C be so that Apply can be
+extended to arrows?
+
+Let alpha : F -> G be an arrow in D^C, and f : X -> Y an arrow in C.
+We have
+
+  Apply (alpha, f) : Apply (F, X) -> Apply (G, Y)
+<=>  { action of Apply on objects }
+  Apply (alpha, f) : F X -> G Y
+
+For any f : X -> Y, alpha should be such that we obtain an arrow F X
+-> G Y.  It helps to summarize the types of the elements we have so
+far:
+
+  In C                    In D
+
+   X                F X          G X
+   |                 |            |
+ f |             F f |            | G f
+   v                 v            v
+   Y                F Y          G Y
+
+This suggests that alpha : F -> G should fill in _any_ such square in
+D.
+
+Therefore alpha should be a collection of arrows of type F X -> G X,
+one for every object X in C.
+
+The collection cannot be arbitrary.  Above, we would obtain _two_
+arrows of the required type F X -> G Y.  Which should we pick?  To
+avoid having to make an arbitrary choice, we impose instead a
+condition on alpha: the two ways should be equal!
+
+Definition: C, D categories, F, G : C -> D functors.  A
+_transformation_ alpha : F -> G is a mapping from the objects of C to
+the arrows of D such that for all X : Obj C
+
+    alpha_X : F X -> G X
+
+(it is a standard convention to denote the arrow "alpha X" by
+alpha_X).
+
+The arrows alpha_X are sometimes referred to as the _components_ of
+the transformation alpha.
+
+A transformation alpha is _natural_ if for all f : X -> Y in C 
+we have
+
+    alpha_Y . F f = G f . alpha_X
+
+
+                             alpha_X
+    X                  F X  ---------> G Y
+    |                   |               |
+   f|                F f|               |G f
+    |                   |               |
+    v                   v    alpha_Y    v
+    Y                  F Y  ---------> G Y
+
+Natural transformations compose, and D^C is indeed a category.
+
+Remark: sometimes (for example, in Hinze's articles) the type of a
+natural transformation is denoted by an arrow with a dot on the top:
+                
+    alpha : F --°--> G
+
+I find this irritating, since it obscures the fact that they are the
+arrows of categories of functors. (end of remark)
+
+In functional programming, natural transformations correspond to
+polymorphic functions.
+
+Examples:
+--------
+
+- reverse, flatten, length, append
+
+- arrows given by universal constructions:
+
+    1 : Id -> K 1
+
+    f : X -> Y          
+
+    We have:
+
+    1 natural transformation
+  <=>  { definition }
+    1_Y . Id f = K 1 f . 1_X
+  <=>  { Id f = f, K 1 f = id_1 }
+    1_Y . f = 1_X
+  <=>  { fusion }
+    true
+
+- fst : (x) -> Fst
+
+  (x) : C x C -> C, (x) (X, Y) = X x Y
+
+  Fst : C x C -> C, Fst (X, Y) = X 
+    
+  (f, g) : (X1, Y1) -> (X2, Y2)
+
+    Fst (f, g) . fst_(X1, Y1) = fst_(X2, Y2) . (f x g)
+  <=>  { definitions }
+    f . fst_(X1, Y1) = fst_(X2, Y2) . 
+                       ((f . fst_(X1, Y1)) ^ (g . snd_(X1, Y1))
+  <=>  { cancellation for split }
+    f . fst_(X1, Y1) = f . fst_(X1, Y1)
+  <=>  { duh }
+    true
+  
+- In the above, we had Fst : C x D -> C, a "polymorphic functor", and
+  fst : X x Y -> X a natural transformation.  Can we view Fst also as
+  a natural transformation?  At this level of generality, no.  We
+  would need Fst to be polymorphic in categories, i.e., to go between
+  (x) : CAT x CAT -> CAT and FST : CAT x CAT -> CAT; but then (x) and
+  FST would need to be functors _within_ CAT.  To avoid paradoxes, we
+  would need to introduce various restrictions, such as universes,
+  etc.
+
+- In Haskell we have
+
+    sort :: Ord a => [a] -> [a]
+
+  Is this a natural transformation?
+
+  Let TORD be the category of _total_ orders and U the forgetful
+  functor U : TORD -> Set, U (X, <=) = X.
+
+  We have List . U : TORD -> SET, so we would need for any X, Y
+  preorders and f : X -> Y monotonic function
+
+     sort . (List . U) f = (List . U) f . sort
+  <=>  { F f = f, List is map }
+     sort . map f = map f . sort
+
+  Is it always the case that mapping a _monotonic_ f to a sorted list
+  gives the same result as sorting the list of the results?
+
+  It is.  To see this, it suffices to note that sorting two lists
+  containing the same elements leads to identical results.
+
+- Let TPRE be the category of total preorders and consider the
+  forgetful functor U : TPRE -> SET, which takes (A, [=) to A.  Assume
+  we have a sorting function
+
+     sortP : List X -> List X
+
+  which can sort the elements of any total preorder X.  Is sort a
+  natural transformation
+
+     sortP : List . U -> List . U
+
+  ?
+
+  The answer is no.  Consider a sorting method that preserves the
+  order of equivalent elements.  Consider the preorder (String+, [=)
+  where non-empty strings are compared only by their first character
+  in alphabetical order, i.e., (c : cs) [= (c' : cs) iff c comes
+  before c' in alphabetical order.
+
+  The function
+
+      f : String+ -> String+
+      f cs = 'X' : cs
+
+  is monotonic w.r.t. [=, since f cs [= f cs' for all cs, cs' (the
+  monotonicity condition is vacuously satisfied).
+
+  Then
+
+    sortP (map f ["b", "a"])
+  =  { definition f }
+    sortP ["Xb", "Xa"]
+  =  { "Xb" ~ "Xa", order is preserved by assumption }
+    ["Xb", "Xa"]
+
+  but
+
+    map f (sortP ["b", "a"])
+  =  { 'a' comes before 'b' }
+    map f ["a", "b"]
+  =  { definition f }
+    ["Xa", "Xb"]
+
+Functors and natural transformations
+------------------------------------
+
+Let F, G : C -> D and alpha : F -> G.
+
+For any functor H : B -> C we have
+
+    alpha_H : F . H -> G . H
+    (alpha_H)_X = alpha_(H X)
+
+is a natural transformation (_precomposing_ alpha with H).
+
+Similarly, for any functor I : D -> E
+
+    I alpha : I . F -> I . G
+    (I alpha)_X = I (alpha X)
+
+is a natural transformation (_postcomposing_ alpha with I).
+
+Given functors F, G : A -> B and H, I : B -> C, and natural
+transformations alpha : F -> G and beta : H -> I, we can define a new
+natural transformation 
+
+    beta * alpha : H . F -> I . G
+
+Writing the types of the elements involved we have
+
+    H alpha : H . F -> H . G
+    I alpha : I . F -> I . G
+    beta_F  : H . F -> I . F
+    beta_G  : H . G -> I . G
+
+We can see we have two choices:
+
+    beta * alpha = beta_G . H alpha
+
+or
+
+    beta * alpha = I alpha . beta_F
+
+    
+Which should we pick?
+
+    beta_(G X) . H alpha_X
+  =  { naturality of beta }
+    I (alpha_X) . beta_(F X)
+  =  { precomposition }
+    I (alpha_X) . (beta_F)_X
+
+We have used alpha_H for the precomposition, and I alpha for the
+postcompostion.  In many textbooks, the composition notation is
+overloaded: alpha . H and I . alpha would be used, respectively.
+
+This suggests that composition-like properties hold, in particular
+associativity:
+
+    alpha . G . F = (alpha_G)_F = alpha_(G . F)
+    I . H . alpha = I (H alpha) = (I . H) alpha
+    I . alpha . H = (I alpha)_H = I (alpha_H)
+
+and the less obvious
+
+    (beta . alpha) . H = (beta . alpha)_H = beta_H . alpha_H
+
+We also have an "abide" law relating . and *:
+
+    alpha : F -> G, beta : G -> H, delta : I -> J, gamma : J -> K
+
+    (gamma . delta) * (beta . alpha) = 
+    (gamma * beta) . (delta * alpha)
+
+Mendler-style folds
+-------------------
+
+F endofunctor, initial F-algebra  in : F uF -> uF
+
+The universal property of folds states that the equation
+
+    x . in = f . F x
+
+has the unique solution x = fold f.
+
+Mendler proposed the following generalisation of folds:
+
+    x . in = psi x
+
+where 
+
+    x : uF -> X
+    psi : Hom(uF, X) -> Hom(F uF, X)
+
+with the condition that psi be natural in the contravariant argument,
+i.e., the X is fixed and
+
+    psi : H1 -> H2
+
+    H1, H2 : C^op -> Set
+    H1 Y = Hom(Y, X)
+    H2 Y = Hom(F Y, X)
+
+    for f : Y2 -> Y1
+    H1 f : H1 Y1 -> H1 Y2
+    H1 f g = g . f
+    H2 f : H2 Y1 -> H2 Y2
+    H2 f g = g . F f
+
+The naturality condition gives us for every f : Y2 -> Y1
+
+    H2 f . psi = psi . H1 f
+  <=>  { extensionality }
+    psi g . F f = psi (g . f) for all g : Y1 -> X
+
+In the case of f with target X, i.e. Y1 = X, we can choose the
+identity for g:
+
+    f : Y2 -> X 
+  =>  { id : X -> X }
+    psi id . F f = psi f
+
+Therefore, for f with target X, the action of psi is determined by psi
+id.
+
+But this is the case of x : uF -> X above!  Therefore we have
+
+    x . in = psi x
+  <=>  { naturality of psi above }
+    x . in = psi id . F x
+  <=>  { universal property of fold }
+    x = fold (psi id)
+
+Therefore, for any natural transformation psi : H1 -> H2, the Mendler
+equation has a unique solution, fold (psi id), and therefore Mendler
+style folds are not more general than standard folds.
+
+Conversely, for any F-algebra a : F X -> X we can define a natural
+transformation 
+
+    psi : H1 -> H2
+    psi g = a . F g
+
+and therefore standard folds are also not more general than Mendler
+folds.

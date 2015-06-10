@@ -1,0 +1,243 @@
+Lecture 3: Universal Properties and Functors
+--------------------------------------------
+
+Let us return to preorders.  One of the interesting properties of
+maximal elements is that they are units of "meet".  An element z is a
+meet of x and y if it satisfies
+
+    z  [=  x
+    z  [=  y
+    forall z'  z' [= x  &  z' [= y  =>  z' [= z
+
+There might be several meets of x and y, but they are all equivalent:
+
+    u, v meets of x and y  
+=>    { definition of meet }
+    u [= v  &  v [= u
+=>    { equivalence }
+    u ~ v
+
+This justifies the frequent usage of "the meet of x and y" and the
+notation x ^ y even in the case of preorders.
+
+There is something annoying in this proof.  It's basically just the
+one from maximal elements.  Neither mathematicians nor computing
+scientists like duplicating work, so a refactoring is in order.
+
+Indeed, we can see that x ^ y is a maximal element (the conclusion of
+the third property), just not in the same preorder X.  In other words,
+instead of directly proving the equivalence of meets of x and y, we
+define a new preorder and reuse the proof for maximal elements.
+
+The preorder in question has as elements those z in X for which
+
+    z [= x and z [= y
+
+and the preorder relation between such elements is simply [=.  The
+maximal elements of this preorder are meets of x and y.  Since all
+maximal elements are equivalent, we say "the maximal element" and
+denote it by "x ^ y".
+
+We can now carry this over to arbitrary categories.
+
+Definition: Given a category C, and two object a, b : Obj C, the
+category Span(a, b) is defined by
+
+    objects: spans, i.e. pairs of arrows (f : c -> a, g : c -> b)
+
+    arrows:  an arrow from (f : c -> a, g : c -> b) to 
+             (h : d -> a, k : d -> b) is a C-arrow l : c -> d such that
+                  c
+                / | \
+               /  |  \
+              /   |   \
+             v    |    v
+             a    |    b
+             ^    |    ^
+              \   |   /
+               \  |  /
+                \ v /
+                  d
+
+             h o l = f  &  k o l = g
+
+
+     The product of a and b, denoted axb is a terminal 
+     object in Span(a, b), that is, it consists of a pair
+     (fst : axb -> a, snd : axb -> b) such that, for any other pair
+     (f : c -> a, g : c -> b), we have a unique arrow f ^ g such that
+
+             fst o f ^ g = f & snd o f ^ g = g
+
+In FUN, the product of two sets is the pair consisting of the two
+projection functions associated to the cartesian product.  In REL it is
+the disjoint sum.  We can now see that, as in the case of preorders, the
+terminal object is the unit of the "meet"-like operation.
+
+Reflection and fusion
+---------------------
+
+Consider a category with a terminal object.  We denote "the" terminal
+object by "1" and the unique arrow from an arbitrary object A to 1 by
+1_A (not to be confused with id_A).
+
+There are two trivial properties of terminal arrows:
+
+1. reflection: 1_1 = id_1
+
+2. fusion: for any f : B -> A we have 1_A o f = 1_B
+
+In the context of products, these properties are not so trivial
+anymore:
+
+1. reflection: fst ^ snd = id
+
+2. (g ^ h) o f = (g o f) ^ (h o f)
+
+In particular fusion laws are of utmost important in program
+calculation.
+
+More categories out of categories: duality and product
+------------------------------------------------------
+
+    4.3 Product category AxB
+
+        objects: for every a : Obj A and b : Obj B, the pair (a, b) is
+                 an object in AxB
+
+        arrows:  for every f : a1 -> a2 in A and g : b1 -> b2 in B, the
+                 pair (f, g) is an arrow in AxB
+
+        src and tgt:
+                 src (f, g) = (src f, src g)
+                 tgt (f, g) = (tgt f, tgt g)
+
+        composition: component-wise
+
+        identities: id_(a, b) = (id_a, id_b)
+
+        Exercise: AxB is a categorical product in CAT.
+
+
+    4.4 dual category: C°
+
+        objects: same as the objects of C
+                 Obj C° = Obj C
+                 When talking about an object a in the context of C°, we
+                 shall use the notation a°
+
+
+        arrows: same as the arrows of C
+                similarly to objects, we'll use f° when referring to f
+                in C° 
+                
+        src and tgt:  
+
+                src° = tgt
+                tgt° = src
+
+                Therefore f° : a° -> b° <=> f : b -> a
+
+                hence the name for (_°) "inverting the arrows"
+
+        composition: for f° : a° -> b° and g° : b° -> c°
+                     g° o° f° = (f o g)°
+
+       
+        Remark: (C°)° = C
+
+        Duality 
+        -------
+
+        Let prop(C) be a statement about arrows and object in
+        C.  "Inverting the arrows" in prop(C), we obtain a statement
+        about C°.  If prop(C) holds for all categories, then prop(C°)
+        will also hold: 
+           forall C prop(C) <=> forall C prop(C°)
+
+
+        Example: all initial objects are uniquely isomorphic
+
+Exercise (important!)
+--------
+
+We have presented "universal properties" emphasizing "terminal".
+Dualize the above discussion in order to obtain the definitions of
+"initial object" and "coproduct".  In particular, make sure that you
+can state and understand "reflection" and "fusion" for coproducts.
+
+Remark (universal property)
+------
+
+A structure is defined by a universal property if it is initial or
+terminal in a category.  The term "universal property" comes from the
+fact that the structure so defined is singled out by its relation to
+other similar structures.
+
+There is, strictly speaking, only one universal property.  Pick one of
+intiality or finality.  Fokkinga (and all of computing science) picks
+initiality (see the article "Calculate Categorically"), hence the
+importance of the exercise above.
+
+Functors
+--------
+
+Definition:
+
+    Let C, D be two categories.  A _functor_ F : C -> D is a
+    "structure preserving" mapping, that is
+               for all A : Obj C
+                       F A : Obj D
+
+               for all f : A -> B in C
+                       F f : F A -> F B in D
+
+               for all A : Obj C
+                       F id_A = id_{F A}
+
+               for all f, g of appropriate types F (g o f) = F g o F f
+
+Examples:
+
+  AoP: Constant functor, List, Tree, A -> X
+
+             X            F X = A ---------> X
+             |                        |
+             |f                       |F f = \ aToX -> f o aToX
+             |                        |
+             v                        v
+             Y            F Y = A ---------> Y
+
+        
+  Math: powerset
+
+  Between structures: monotonic functions, homomorphism (see Hutton,
+  lecture 2, examples 4 and 5)
+
+  A problematic example:
+
+  X -> A
+
+  F X = X -> A, F Y = Y -> A, given f : X -> Y and xToA : X -> A we
+  cannot make a yToA : Y -> A
+
+  But given f and yToA, we can make an xToA: 
+        xToA = yToA o f
+
+  So it's not a functor FUN -> FUN, but rather FUN° -> FUN.
+
+  Such a functor is called contravariant
+
+  Example:  take A = Bool.  We obtain the contravariant powerset
+  functor.
+
+  Hom functor: C° x C -> FUN
+
+  (A, B)               Hom(A, B) = {alpha : A -> B}
+   ^  |                          |
+   |  |                          |Hom(f, g) alpha = g o alpha o f
+  f|  |g                         |
+   |  v                          v
+  (C, D)               Hom(C, D) = {beta : C -> D}
+
+  

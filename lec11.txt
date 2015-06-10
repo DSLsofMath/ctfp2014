@@ -1,0 +1,146 @@
+Lecture 11
+----------
+
+Example:  L = Pre_Maybe, type fusion
+--------
+
+Consider functors L, F, G such that
+
+    L o F ~ G o L
+
+i.e., we have a natural isomorphism between L o F and G o L.
+
+Then
+
+    L o F ~ G o L
+  =>  { specialize to the fixed point of F }
+    (L o F) (u F) ~ (G o L) (u F)
+  <=> { composition }
+    L (F (u F)) ~ G (L (u F))
+  <=> { u F ~ F (u F) }
+    L (u F) ~ G (L (u F))
+  <=> { definition of fixed point }
+    L (u F) is a fixed point of G
+
+Using the machinery of adjoint folds, one can show something stronger:
+if L is a left adjoint, then L (u F) is the smallest fixed point of G,
+i.e.:
+
+  +------------------------------------------------------+
+  | L o F ~ G o L  and L left adjoint  =>  L (u F) ~ u G |
+  +------------------------------------------------------+
+
+This is known as _type_fusion_ (See section 8 of Hinze's "Adjoint Folds" paper.)
+
+We can use this to prove the example from the end of Lecture 1:
+
+    List (Maybe a) ~ Maybes a
+
+where
+
+    Maybes a = Done | Skip (Maybes a) | Yield a (Maybes a)
+
+This translates to 
+
+    List o Maybe ~ Maybes
+
+in FUN^FUN.
+
+List is the fixed point of
+
+   F    H  = K 1 + Id x H       -- H, K 1, Id are functors
+   F alfa  = id_1 + id x alpha  -- id_1, id, alpha are natural transformation
+
+   u F = List
+
+   Remark: Do not confuse "List" with "List A"!  The latter is the
+   least fixed point of the endofunctor F X = 1 + A x X.
+
+Maybes is the fixed point of
+
+   G H      = K 1 + H + Id x H
+   G alpha  = id_1 + alpha + id x alpha
+
+   u G = Maybes
+
+If we want to show 
+
+   (u F) o Maybe ~ (u G)
+
+by applying type fusion, L needs to be a functor in FUN^FUN such that
+
+   L (u F) = (u F) o Maybe
+
+therefore, we can take
+
+   L F       =  F o Maybe
+   L alpha   =  alpha_Maybe
+
+L is the precomposition with Maybe.
+
+To show that L has a right adjoint, we have to find a functor R :
+FUN^FUN -> FUN^FUN and a natural isomorphism of type
+
+    phi : { alpha : L H1 -> H2 } -> { beta : H1 -> R H2 }
+
+The derivation is similar to the one for the projection functor:
+
+    alpha : L H1 -> H2
+  <=>  { definition L }
+    alpha : H1 o Maybe -> H2
+   =>  { introducing arbitrary set Y }
+    alpha_Y : H1 (Maybe Y) -> H2
+  <=> { introducing H : FUN° -> FUN, H X = { g : H1 X -> H2 Y} }
+    alpha_Y \in H (Maybe Y)
+   => { Yoneda lemma }
+    yon (alpha_Y) \in { beta : Emb (Maybe Y) -> H }
+   => { introducing abitrary set X }
+    (yon (alpha_Y))_X : Emb (Maybe Y) X -> H X
+   <=> { definition Emb, H }
+    (yon (alpha_Y))_X : { f : X -> Maybe Y } -> { g : H1 X -> H2 Y }
+   <=> { uncurry }
+    uncurry (yon (alpha_Y))_X : { f : X -> Maybe Y } x H1 X -> H2 Y
+   <=> { swap }
+    swap (uncurry (yon (alpha_Y))_X) : H1 X x { f : X -> Maybe Y } -> H2 Y
+   <=> { curry }
+    curry (swap (uncurry (yon (alpha_Y)_X))) :
+       H1 X -> { g : { f : X -> Maybe Y } -> H2 Y }
+   <=> { introducing R G X = { g : { f : X -> Maybe Y } -> G Y } }
+    curry (swap (uncurry (yon (alpha_Y)_X))) :
+       H1 X -> R H2 X
+
+Exercise: show that R is a functor.
+
+Since Y was arbitrary, we can take
+
+   phi alpha = curry (swap (uncurry (yon (alpha_X))_X)
+
+Exercise: show that phi is a natural isomorphism.
+
+
+The distributivity condition
+
+    L o F ~ G o L
+
+with L = o Maybe, F H = K 1 + Id x H, G H = 1 + H + Id x H is easily
+checked:
+
+    (L o F) H X
+  =  { composition }
+    (L (F H)) X
+  =  { definition L }
+    ((F H) o Maybe) X
+  =  { composition }
+    F H (Maybe X)
+  =  { definition F }
+    1 + (Maybe X) x H (Maybe X)
+  =  { definition Maybe }
+    1 + (1 + X) x H (Maybe X)
+  ~  { distributivity }
+    1 + H (Maybe X) + X x H (Maybe X)
+  =  { definition G }
+    G (H (Maybe X))
+  =  { definition L }
+    G (L H) X
+  =  { composition }
+    (G o L) H X

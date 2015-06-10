@@ -1,0 +1,380 @@
+Lecture 8: Adjunctions
+----------------------
+
+Consider the following _nested_datatype_ PTree:
+
+> data PTree a = PLeaf a | PNode (PTree (a, a))
+>                deriving Show
+
+> cross (f, g) (a, b) = (f a, g b)
+
+> instance Functor PTree where
+>   fmap f (PLeaf a)  =  PLeaf (f a)
+>   fmap f (PNode pt) =  PNode (fmap (cross (f, f)) pt)
+
+> psum :: PTree Int -> Int
+> psum (PLeaf n)  = n
+> psum (PNode pt) = psum (fmap plus pt) where plus (a, b) = a + b
+
+> ptest :: PTree Int
+> ptest = PNode (PNode (PLeaf ((1, 2), (3, 4))))
+
+Evaluating 
+
+< psum ptest 
+
+returns 10.
+
+We want to describe PTree as the fixed point of a functor.  For the
+datatype of lists
+
+> data List a = Nil | Cons (a, List a)
+
+we described "List a" as the fixed point of the functor 
+
+    F X = 1 + A x X
+
+We then defined the action of List on functions by using the fact that
+List a was the fixed point of F.
+
+This worked because the data declaration established an isomorphism
+between List A and F (List A).  
+
+In the case of PTree, however, the data declaration does _not_
+establish an isomorphism between PTree A and F (PTree A), but between
+PTree A and F (PTree (A x A)).
+
+We must define PTree directly as a fixed point.  PTree is a functor,
+therefore we must work in a category of functors, in this case
+FUN^FUN.  The functor that defines the algebra is therefore going to
+be a functor
+
+    F : FUN^FUN -> FUN^FUN
+
+    F G A = A + G (A x A)
+    F G f = f + G (f x f)
+
+Important remark!  The above equations only define the action of F for
+the objects of FUN^FUN, we still have to define the action of F on the
+arrows of FUN^FUN, i.e., on natural transformations.
+
+For any functors G, H : Obj FUN^FUN and natural transformation
+
+    alpha : G -> H
+
+we need to define the natural transformation
+
+    F alpha : F G -> F H
+
+We do that pointwise:
+
+    F alpha_A : A + G (A x A) ->  A + H (A x A)
+    F alpha_A = id_A + alpha_(A x A)
+
+(We have discussed previously that + and x are the coproduct and
+product in CAT.)
+
+PTree is the initial algebra of this F:
+
+             in = PLeaf v PNode
+    PTree <--------------------- F PTree
+
+This "in" is a natural transformation, for every set A we have an
+arrow
+
+               PLeaf_A v PNode_A
+    PTree A <--------------------- F PTree A = A + PTree (A x A)
+
+PLeaf and PNode are natural transformation:
+
+    PLeaf : Id -> PTree
+    PNode : PTree . Dup -> PTree
+
+where Dup is the diagonal functor
+
+    Dup : C -> C x C
+    Dup X = (X, X)
+    Dup f = (f, f)
+
+Everything is done component-wise.
+
+For any other natural transformation
+
+         alpha v beta
+    G <--------------- F G
+
+    alpha : Id -> G
+    beta  : G . Dup -> G
+
+the universal property of fold gives us the natural transformation
+fold (alpha v beta) which satisfies
+
+    fold (alpha v beta) . (PLeaf v PNode) = 
+    (alpha v beta) . F (fold (alpha v beta))
+
+For any A, we obtain
+
+    (fold (alpha v beta) . (PLeaf v PNode))_A = 
+    ((alpha v beta) . F (fold (alpha v beta)))_A
+
+Abbreviating fold (alpha v beta) to fold, we have:
+
+    fold_A . (PLeaf_A v PNode_A) = 
+         (alpha_A v beta_A) . (id_A + fold_(A x A))
+
+  <=>  { v fusion, v . + fusion, equality of joins }
+
+    fold_A . PLeaf_A = alpha_A     and
+    fold_A . PNode_A = beta_A . fold_(A x A)
+
+In Haskell:
+
+    fold (PLeaf a) = alpha a
+    fold (PNode pt) = beta (fold pt)
+
+Example:
+
+    alpha_A : A -> List A
+    alpha_A a = Cons a Nil
+
+    beta_A : List (A x A) -> List A
+    beta_A = unPair
+       where
+       unPair [] = []
+       unPair ((a1, a2) : as) = a1 : a2 : unPair as
+
+Then
+
+    fold (alpha v beta) = pflatten : PTree -> List
+
+flattens a PTree.
+
+The problem is that in this way we can only define natural
+transformations of the type PTree -> G for some functor G.
+
+The example of psum above, however, does not fit this mold.  psum is
+not a polymorphic function, and relies on the operation + on integers.
+
+psum is an arrow in FUN, whereas fold is an arrow in FUN^FUN, since so
+is the arrow in, which guarantees the solution of the fold equation.
+We would like to "project on Int" "in" so we could write a recursive
+equation in terms of psum and in_Int:
+
+    psum . in_Int = psi psum
+
+where psi stands for "some appropriate transformation of psum".
+
+The "projection" operation is functorial and can be described
+generically.
+
+    C, D categories
+    X : Obj C _fixed_
+
+    L : D^C -> D
+    L F = F X
+    L alpha = alpha_X
+
+This suggests that it might be useful to study equations of the form 
+
+    x . L in = psi x
+
+which resemble the Mendler-style folds from lecture 7.
+
+Such a generalization would also help us give a more uniform account
+of parametrized types, such as List, by defining them as fixed points
+in FUN^FUN, just as we did with PTree.
+
+It would also allow us to account for mutually recursive definitions
+such as
+
+    even : Nat -> Bool
+    even Z      =  True
+    even (S n)  =  odd n
+
+    odd  : Nat -> Bool
+    odd Z       =  False
+    odd (S n)   =  even n
+
+as solutions to
+
+    (x1 x x2) . Dup in = psi (x1 x x2)
+
+Here, the solution, being a pair of arrows, lives in the product
+category FUN x FUN, while in = Zero v Succ is an arrow in FUN.
+
+And so on.  In fact, all the "foldlike" schemes studied so far fit in
+this form, sometimes in a way which is more natural than trying to fit
+them in the form of a standard fold (as illustrated by PTree).
+
+When does the equation
+
+    x . L in = psi x
+
+have a unique solution?
+
+The types of the entities involved are
+
+    C, D categories
+    A : Obj D (fixed!)
+    F : C -> C
+    in : F uF -> uF 
+    L : C -> D
+    x : L uF -> A
+    psi : (L uF -> A) -> (L (F uF) -> A)
+
+By analogy with Mendler-style folds, we generalize psi to be a natural
+transformation 
+
+    psi_X : Hom (L X, A) -> Hom (L (F X), A)
+
+I prefer the following notation for Hom sets:
+
+    Hom(X, Y) = { f : X -> Y }
+
+so
+
+    psi_X : { f : L X -> A } -> { g : L (F X) -> A }
+
+We have:
+
+    psi : H1 -> H2
+
+    H1 : C° -> Set
+    H1 X = { f : L X -> A }
+    for h : X2 -> X1 in C
+      H1 h : H1 X1 -> H1 X2
+      H1 h f = f . L h
+
+    H2 : C° -> Set
+    H2 X = { g : L (F X) -> A }
+    for h : X2 -> X1 in C
+      H2 h : H2 X1 -> H2 X2
+      H2 h g = g . L (F h)
+
+The naturality condition translates to
+
+    for any h : X2 -> X1
+
+    psi . H1 h = H2 h . psi
+  <=>  { extensionality }
+    psi (H1 h f) = H2 h (psi f) for all f : L X1 -> A
+  <=>  { definitions }
+    psi (f . L h) = psi f . L (F h)
+
+Let us return to the equation
+
+    x . L in = psi x
+
+We are looking for conditions that guarantee existence and unicity of
+an arrow of type
+
+    L uF -> A
+
+In our framework, we only have this kind of guarantees for arrows of
+type
+
+    uF -> B
+
+namely, for folds (and initial or terminal arrows in general).
+Therefore, a starting point is to require a transformation between
+such arrows.  The transformation should allow us to go from one type
+to the other and back, so it should be invertible.  We want it to work
+for all A, therefore B will also vary, in a way which depends on A.
+The transformation should work for various uF (in our examples the
+same L can be used with many uF), and do so in a natural way.  In
+short, we can summarize these by postulating a natural transformation
+
+
+    phi_(Y, X) : { f : L X -> Y } -> { g : X -> R Y }
+
+which has a natural inverse.
+
+We spell out the functors and the naturality condition:
+
+    L   : C -> D
+    R   : D -> C
+
+    phi : H3 -> H4
+
+    H3 : C° x D -> Set
+    H3 (X, Y) = { f : L X -> Y }
+    for h1 : X2 -> X1 in C and h2 : Y1 -> Y2 in D
+      H3 (h1, h2) : { f : L X1 -> Y1 } -> { f' : L X2 -> Y2 }
+      H3 (h1, h2) f = h2 . f . L h1
+
+    H4 : C° x D -> Set
+    H4 (X, Y) = { g : X -> R Y }
+    for h1 : X2 -> X1 in C and h2 : Y1 -> Y2 in D
+      H4 (h1, h2) : { g : X1 -> R Y1 } -> { g' : X2 -> R Y2 }
+      H4 (h1, h2) g = R h2 . g . h1
+
+    phi . H3 (h1, h2) = H4 (h1, h2) . phi
+  <=>  { extensionality }
+    phi (H3 (h1, h2) f) = H4 (h1, h2) (phi f) for all f
+  <=>  { definitions }
+    phi (h2 . f . L h1) = R h2 . phi f . h1
+
+Writing phi' for phi^(-1):
+
+    phi' . H4 (h1, h2) = H3 (h1, h2) . phi'
+  <=>  { extensionality }
+    phi' (H4 (h1, h2) g) = H3 (h1, h2) (phi' g) for all g
+  <=>  { definitions }
+    phi' (R h2 . g . h1) = h2 . phi' g . L h1
+
+Finally, we can calculate:
+
+    x . L in = psi x
+  <=>  { phi iso }
+    phi (x . L in) = phi (psi x)
+  <=>  { naturality of phi:  h2 = id, f = x, h1 = in }
+    R id . phi x . in = phi (psi x)
+  <=>  { R functor }
+    phi x . in = phi (psi x)
+  <=>  { need to make phi x appear on the RHS, phi iso }
+    phi x . in = phi (psi (phi' (phi x)))
+  <=>  { R functor, identities }
+    phi x . in = phi (psi (phi' (R id . id . phi x)))
+  <=>  { naturality of phi': h2 = id, g = id, h1 = phi x }
+    phi x . in = phi (psi (id . phi' id . L (phi x)))
+  <=>  { identity }
+    phi x . in = phi (psi (phi' id . L (phi x)))
+  <=>  { abbrv eps = phi' id, naturality of psi: f = eps, h = phi x}
+    phi x . in = phi (psi eps . L (F (phi x)))
+  <=>  { naturality of phi, h2 = id, f = psi eps, h1 = F (phi x) }
+    phi x . in = R id . phi (psi eps) . F (phi x)
+  <=>  { R functor }
+    phi x . in = phi (psi eps) . F (phi x)
+  <=>  { universal property of fold }
+    phi x = fold (phi (psi eps))
+  <=>  { phi iso }
+    x = phi' (fold (phi (psi eps)))
+
+The conditions we have imposed are indeed sufficient to guarantee a
+unique solution to the equation.  These conditions are exactly those
+in the definition of _adjunctions_:
+
+Definition (Mac Lane 2nd, p. 80)
+--------------------------------
+
+    Let C and D be categories.  An adjunction from C to D is a triple
+    <L, R, phi> : C -> D, where L and R are functors
+                
+                           L
+                  ------------------>                        
+                C                    D
+                  <------------------
+                           R
+
+     while phi is a function which assigns to each pair of objects X :
+     Obj C and Y : Obj D a bijection of sets
+
+                phi_(X, Y) : { f : L X -> Y } -> { g : X -> R Y}
+
+     which is natural in X and Y.
+
+L is called the left adjoint, R is the right adjoint.
+
+Of course, all this would be perfectly useless if we couldn't find
+such a phi for the functors L that we are interested in!
+

@@ -1,0 +1,327 @@
+Administrative matters:  
+
+     aim of course: to get up to speed with latest research
+
+     seminar:  self organize
+               solve exercises from AOP
+               present assignments
+
+     assignments: original sources or important exercises
+                  to be done in groups
+                  presented in seminar
+                  possible subjects for the first assignment: 
+                       nodups (Bird 1986, p. 35--36)
+                       minimax, alpha-beta (Bird 1988, Section 3)
+                       area of largest rectangle (Bird 1988, Section 4)
+                       converting a sequence to a heap (Bird 1988, Section 5)
+
+References:
+
+[1]  Bird 1986: "A Theory of Lists", PRG-56, Oxford Univ. Comp. Lab.
+[2]  Bird 1988: "Lectures on Constructive Functional Programming",
+                PRG-69, Oxford Univ. Comp. Lab.
+[3]  Bird 1989: "Algebraic Identities for Program Calculation", The
+                Computer Journal, Vol. 32, No. 2
+
+  
+Lecture 1: Program calculation
+------------------------------
+
+What is program calculation?
+
+The abstract of Richard Bird's 1989 article "Algebraic
+Identities for Program Calculation" explains:
+
+   "To _calculate_ a program means to derive it from a suitable
+   specification by a process of equational abstraction.  We describe
+   a number of basic algebraic identities that turn out to be
+   extremely useful in this task.  These identities express
+   relationships between the higher-order functions commonly
+   encountered in functional programming.  The idea of program
+   calculation is illustrated with two non-trivial examples."
+
+We, too, shall give two examples, but they'll be different from
+Bird's.
+
+In functional programming we have algebraic datatypes:
+
+    data List a = Nil | Cons a (List a)
+
+Nil and Cons act as "labels".  The set of elements defined by this is
+
+   List a = {Nil} U {Cons a as | a in a, as in List a}
+          = {Nil, Cons a0 Nil, Cons a0 (Cons a0 Nil), ...
+                  Cons a1 Nil, Cons a1 (Cons a0 Nil), ...
+                               Cons a2 Nil, ....}
+
+Any value of type List a is either Nil, or a label Cons followed by a
+value of type a and another List a.  Because of this, we can define
+functions by pattern-matching (switching to Haskell notation):
+
+    double [] = []
+    double (a : as) = 2 * a : double as
+
+and we are assured that this is well defined.
+
+Some patterns come up over and over again ("the higher-order functions
+commonly encountered in functional programming" from Bird 1988).
+
+    map f [] = []
+    map f (a : as) = f a : map f as
+
+and
+
+    foldr f e [] = e
+    foldr f e (a : as) = f a (foldr f e as)
+
+For example, map f can be written as a foldr:
+
+    map f = foldr ((:) o f) []
+
+Fold-fusion
+-----------
+
+When is
+
+    f o foldr g c = foldr h e
+
+We compute (Hutton-style):
+
+    Case []:
+
+    f o foldr g c [] = foldr h e []
+  =    { definition foldr }
+    f c = e
+
+    Case (a : as):
+
+    f o foldr g c (a : as) = foldr h e (a : as)
+  <=>   { definition foldr on both sides }
+    f (g a (foldr g c as)) = h a (foldr h e as)
+  <=>   { induction hypothesis }
+    f (g a (foldr g c as)) = h a (f (foldr g c as))
+  <=    { abstracting out foldr g c as }
+    f (g a b) = h a (f b)
+
+    +---------------------------------+
+    |      f o foldr g c = foldr h e  |
+    |  <=                             |
+    |      f c       = e       and    |
+    |      f (g a b) = h a (f b)      |    
+    +---------------------------------+
+
+Remark: In Haskell, there are additional strictness requirements,
+which we shall gloss over for now.
+
+Example: fold-map fusion
+-------
+
+    foldr f e o map g
+  =  { writing map as a foldr }
+    foldr f e o foldr ((:) o g) []
+  =  { foldr fusion }
+    foldr (f o g) []
+
+    Which comes from h a (foldr f e b) = foldr f e ((:) o g a b)
+                                       = foldr f e (g a : b)
+                                       = f (g a) (foldr f e b)
+          <= h = f o g
+
+Compare this development with
+
+    Case []:
+
+    foldr f e o map g [] 
+  =  { definitions of map and foldr }
+    e
+
+    Case (a : as)
+
+    foldr f e o map g (a : as)
+  =  { definition of map }
+    foldr f e (g a : map g as)
+  =  { definition of foldr }
+    f (g a) (foldr f e (map g as))
+  =  { definition of composition }
+    (f o g) a ((foldr f e o map g) as)
+
+  Comparing with the definition of foldr, we discover
+
+    foldr f e o map g = foldr (f o g) e
+
+Since the first way did not explicitely use arguments, it is called
+"point-free", in order to contrast it with the second which is
+accordingly called "pointwise".
+
+Triangle (Ruby circuit design language)
+--------
+
+Informal specification:
+
+    tri f : [a] -> [a]
+    tri f [a0, a1, ..., ai, ..., an] = 
+          [a0, f a1, ..., f^i ai, ..., f^n an]
+
+Formally:
+
+    tri f [] = []
+    tri f (a : as) = a : map f (tri as)
+
+Binary hyperproduct
+
+    bh [a0, ..., an-1] = PI_{i = 0}^{n-1} ai^2^i
+
+=>
+
+    bh = foldr (*) 1 o tri sqr
+
+This does two traversals of the list; we want just one.
+
+Question: when does a fold after a tri give a fold?
+
+    foldr g c o tri f = foldr h e      (*)
+
+Idea: write tri f as a fold and use fusion.
+
+    tri f (a : as)
+  =    { definition tri f }
+    a : map f (tri as)
+  =    { introducing consMap f x xs = x : map f xs }
+    consMap f a (tri as)
+
+Therefore
+
+    tri f = foldr (consMap f) [] where consMap f x xs = x : map f xs
+
+Recall fold-fusion:
+
+    +---------------------------------+
+    |      f o foldr g c = foldr h e  |
+    |  <=                             |
+    |      f c       = e       and    |
+    |      f (g a b) = h a (f b)      |    
+    +---------------------------------+
+
+Applying fold-fusion we get that (*) is satisfied if
+
+    foldr g c [] = e        i.e.  e = c
+
+and
+
+    foldr g c (consMap f x xs) = h x (foldr g c xs)
+  <=>  { definition consMap f }
+    foldr g c (x : map f xs) = h x (foldr g c xs)
+  <=>  { definition of foldr }
+    g x (foldr g c (map f xs)) = h x (foldr g c xs)
+  <=>  { fold-map fusion }
+    g x (foldr (g o f) c xs) = h x (foldr g c xs)
+  <=   { "abstracting away" foldr g c xs }
+    h x y = g x (f y)    and
+    f (foldr g c xs) = foldr (g o f) c xs
+  <=   { fusion one more time! }
+    h x y = g x (f y) and
+    f c = c
+    f (g x y) = (g o f) x (f y) = g (f x) (f y)
+
+In summary
+
+    +------------------------------------+
+    |         Horner's rule:             |
+    |   foldr g c o tri f = foldr h c    |
+    |      where h x y = g x (f y)       |
+    | <=                                 |
+    |   f c = c                          |
+    |   f (g x y) = g (f x) (f y)        |
+    +------------------------------------+
+
+Why is this called "Horner's rule"?
+
+    a0 + a1 * x + a2 * x^2 + ... + an*x^n 
+  =
+    a0 + (a1 + (a2 + (... + (an + 0) * x) ... * x) * x)
+
+That is
+
+    foldr (+) 0 o tri (*x) = foldr h 0 where h a b = a + b * x
+
+Verifying the conditions:
+
+    (*x) 0 = 0   check
+    (*x) ((+) a b) = (+) (*x a) (*x b) distributivity!
+
+Getting back to bh:
+
+    foldr (*) 1 o tri sqr = foldr h e
+
+if
+
+    e = 1  check
+    h x y = (*) x (sqr y) = x * y^2  check
+    sqr 1 = 1 check!
+    sqr ((*) x y) = (*) (sqr x) (sqr y) check!
+
+Another example
+---------------
+
+data Tree a = Tip a | Bin (Tree a) (Tree a)
+
+foldT f g (Tip a) = g a
+foldT f g (Bin tl tr) = f (foldT f g tl) (foldT f g tr)
+
+mapTree f = foldT Bin (Tip o f)
+maxT = foldT max id
+
+triT f (Tip a) = Tip a
+triT f (Bin tl tr) = Bin (mapT f (triT f tl)) (mapT f (triT f tr))
+
+E.g.
+----
+
+             .                        .   
+            / \                      / \  
+  tri f    .   d                    .   f d
+          / \                      / \    
+         .   c                    .   f^2 c   
+        / \                      / \      
+       a   b                f^3 a f^3 b   
+
+Define
+
+    depths = triT (+1) o mapT (const 0)
+
+Then the depth of a tree is
+
+    depth = maxT o depths
+
+This does two traversals of the tree (forget about the zeroing step);
+we want just one.
+
+Look familiar?
+
+Final remark
+------------
+
+Traditionally, program calculation has been concerned only faster
+programs, not with more efficient data representation.  For example,
+taken from Hinze:
+
+(read ~ as "is isomorphic to")
+
+    List (Maybe a) ~ Maybes a
+
+where
+
+    Maybes a = Done | Skip (Maybes a) | Yield a (Maybes a)
+
+which is much more efficient:
+
+    Cons (Just 1) (Cons Nothing (Cons (Just 2) Nil))
+
+requires 9 cells, whereas
+
+    Yield 1 (Skip (Yield 2 Done))
+
+requires only 6.  In general, we save n cells for a list of length n.
+
+The recent developments of Hinze and al. also handle this kind of
+optimization.

@@ -1,0 +1,330 @@
+Notes to lecture 9:
+-------------------
+
+Yoneda 1:
+
+   Consider the Yoneda embedding:
+
+   E : C -> FUN^C°
+   E X : C° -> FUN
+   E X Y = { f : Y -> X }
+   E X (h : Y2 -> Y1) : E X Y1 -> E X Y2
+   E X h f = f . h
+
+   The Yoneda lemma says:
+
+   For any F : C° -> FUN and any A in C we have
+
+   F A ~ { alpha : E A -> F }
+
+   If we curry the other way around we obtain
+
+   E° : C° -> C^FUN
+   E° X : C -> FUN
+   E° X Y = { f : X -> Y }
+   E° X (h : Y1 -> Y2) : E° X Y1 -> E° X Y2
+   E° X h f = h . f
+
+   The Yoneda lemma in this form says
+   For any F : C -> FUN and any A in C we have
+
+   F A ~ { alpha : E° A -> F }
+
+   (yes, that's how the arrows go, you might have expected <- there)
+
+   An important property is
+     A ~ B <=> E A ~ E B
+   
+
+
+    h 0 = e
+    h (S n) = f (S n, h n)
+
+E.g. e = 1, f = (*) => h = fac
+
+    h . (0 v S) = e v f . (S ^ h)
+
+Idea: h and id defined by mutual recursion.
+
+    (h, id) . Dup (0 v S) = (e v f . (S ^ h), 1 v S . S)
+                         = psi (h, id)
+  <=  { abstracting away from h and S }
+     psi (f1, f2) = (e v f . (f2 ^ f1),  1 v S . f2)
+
+psi is natural, therefore the equation has a unique solution.
+
+    h = fst . fold (f1 ^ f2)
+    where
+    (f1, f2) = psi (fst, snd)
+             = (e v f . (snd ^ fst), 1 v S . snd)
+             = (e v f . swap, 1 v S . snd)
+We have
+
+    f1 ^ f2
+  =  { using the v^v = ^v^ law }
+    (e ^ 1) v (f . swap ^ S . snd)
+
+therefore
+
+    h n = fst (f . swap ^ S . snd)^n (e ^ 1)
+
+For example
+
+    0           (e, 1)           e
+    1         (f (1, e), 2)      f (1, e)
+    2      (f (2, f (1, e)), 3)  f (2, f (1, e))
+
+etc.  In the case of the factorial
+
+    0           (1, 1)           1
+    1           (1, 2)           1
+    2           (2, 3)           2
+    3           (6, 4)           6
+
+etc.
+
+
+
+
+
+Older notes to lecture 9:
+-------------------
+
+Why is there no talk of the terminal F-algebra?  Because it is
+trivial:
+
+
+        F 1 ----------> 1
+         ^              ^
+         |              |
+   F 1_X |              | 1_X
+         |              |
+        F X ----------> X
+
+Perhaps the requirement of being an F-algebra is too strong.  What if
+we relax to arrows F Y -> X with arbitrary Y and X?
+
+    F : C -> D (no longer needs to be an endofunctor)
+
+    F Y -> X instead of F X -> X
+
+The category of such "generalized algebras" is a special kind of
+_comma_category_.
+
+Definition: 
+-----------
+  Let 
+    A, B, C categories, 
+    F : A -> C, G : B -> C functors
+  The _comma_category_ (F \|/ G) (imagine a downward arrow):
+    Objects: triples (X : Obj A, Y : Obj B, f : F X -> G Y)
+    Arrows:  g : (X1, Y1, f1) -> (X2, Y2, f2) is a pair of arrows
+             (g1, g2) : (X1, Y1) -> (X2, Y2) in AxB such that
+             f2 o F g1 = G g2 o f1
+
+  If one of the functors is the identity, we write the category in its
+  place.  If one of the functors is constant, we write the object of
+  its image in its place and speak of _slice_ category.  If,
+  additionally, the source of the constant functor is the singleton
+  category, we omit the * from the triples (which therefore become
+  pairs).
+
+Remark: the two object are independent.  Thus, it is _not_ the case
+that Alg(F) = (F \|/ C) for F : C -> C.
+
+Returning to our generalized algebras, they _are_ objects in (F \|/
+C).
+
+However, the terminal object in (F \|/ C) is still trivial:
+
+        F 1 ----------> 1
+         |              |
+   F 1_Z |              | 1_W
+         |              |
+        F Z ----------> W
+
+This is always going to be the case if we have the flexibility of
+"picking" the source and the target of the F-algebra.  Let us
+therefore fix one of them, say the target:
+
+        F Y ----------> X
+         ^              ^
+         |              |
+     F g |              | g'
+         |      f       |
+        F Z ----------> W
+
+Can we find a terminal object in (F \|/ C) for any X?
+
+It is easy to see that the answer is no.  Moreover, there is a
+somewhat unnatural "factoring" going on at W.  The arrows f and (g' o
+f) are both generalized F-algebras, there seems to be no clear reason
+for separating them (as opposed to the case of F-algebras, where all
+arrows were clearly separted by types).
+
+We therefore consider (F \|/ X) as the suitable comma category, and
+here we finally have non-trivial terminal generalized F-algebras:
+
+                eps_X
+        F (T X) -----> X
+         ^           ^
+         |          /
+ F (f^#) |         / f
+         |        /  
+         |       /       
+         |      /
+         |     /
+         |    /
+         |   /
+          F Z
+
+Spelling things out we have the following
+
+Definition: F : C -> D functor, X : Obj D.  A
+            _universal_arrow_from_F_to_X is a terminal object in
+            (F \|/ X), i.e., a pair consisting of an
+            object T X : Obj C and an arrow eps_X : F (T X) -> X in D,
+            such that for any Z : Obj C and f : F Z -> X there exists
+            a unique arrow f^# : Z -> T X with
+
+                  eps_X . F (f^#) = f
+
+Exercise: write down reflection and fusion.
+
+Are such terminal objects in any way interesting?
+
+Examples:
+
+1.  Consider the functor 1_C : C -> 1.  Let * be the unique object of
+    1. Assume eps_1 : 1_C (T *) -> * is
+    a terminal object in (1_C \|/ 1).  We have
+
+    for any object Z in C and any arrow f : 1_C Z -> 1 there exists a
+    unique arrow f^# : Z -> T 1 in C such that 
+        eps_1 . 1_C (f^#) = f
+  <=> { f : 1_C Z -> * <=> f = id_*, all equalities between arrows
+        hold in 1 }
+    for any object Z in C there exists a unique arrow f^# : Z -> T *
+  <=> { definition terminal object }
+    T * is terminal in C
+
+2.  Consider the functor dup : C -> CxC, dup Y = (Y, Y).  Fix an
+object X = (X1, X2) in CxC.  Let eps_X : dup (T (X1, X2)) -> (X1, X2) be
+terminal in (dup \|/ (X1, X2)).  Let's translate what this means in slow
+motion:
+
+    eps_X : dup (T (X1, X2)) -> (X1, X2) terminal
+  <=> { definition of terminal }
+    for any f : Obj (dup \|/ (X1, X2)) there exists a unique 1_f : f -> eps_X
+  <=> { definition of (dup \|/ (X1, X2)) }
+    for any Y : Obj C, any arrow f : dup Y -> (X1, X2) there exists a unique
+    arrow  f^# : Y -> T (X1, X2) such that 
+       eps_X . dup f^# = f
+  <=> { f : dup Y -> (X1, X2) <=> f = (f1, f2) }
+    for any Y : Obj C, any arrows f1 : Y -> X1 and f2 : Y -> X2 there
+    exists a unique arrow f^# : Y -> T (X1, X2) such that
+       eps_X . dup f^# = f
+  <=> { eps_X = (eps1_X, eps2_X) }
+    for any Y : Obj C, any arrows f1 : Y -> X1 and f2 : Y -> X2 there
+    exists a unique arrow f^# : Y -> T (X1, X2) such that
+       eps1_X . f^# = f1
+       eps2_X . f^# = f2
+  <=> { renaming eps1_X to fst, eps2_X to snd, T (X1, X2) to X1 x X2,
+        f^# to f1 ^ f2 }
+    for any Y : Obj C, any arrows f1 : Y -> X1 and f2 : Y -> X2 there
+    exists a unique arrow f1 ^ f2 : Y -> X1 x X2 such that
+       fst . f1 ^ f2 = f1
+       snd . f1 ^ f2 = f2
+    
+Therefore, we obtain an alternative characterization of the product of
+X1 and X2.
+
+Note to lecture 8:
+-----------------
+
+Lifting psum to all monoids would not help, it would then have the
+type PTree . U -> U (with U being the forgetful functor MON -> FUN).
+
+
+-----------------------------
+Notes for adjoints
+
+Comma category
+--------------
+
+A, B, C categories
+
+F : A -> C, G : B -> C functors
+
+Definition: The _comma_category_ (F \|/ G) (imagine a downward arrow):
+    Objects: triples (X : Obj A, Y : Obj B, f : F X -> G Y)
+    Arrows:  g : (X1, Y1, f1) -> (X2, Y2, f2) is a pair of arrows
+             (g1, g2) : (X1, Y1) -> (X2, Y2) in AxB such that
+             f2 o F g1 = G g2 o f1
+
+If one of the functors is the identity, we write the category in its
+place.  If one of the functors is constant, we write the object of its
+image in its place and speak of _slice_ category.  If, additionally,
+the source of the constant functor is the singleton category, we
+omit the * from the triples (which therefore become pairs).
+
+Remark: the two object are independent.  Thus, it is _not_ the case
+that Alg(F) = (F \|/ C) for F : C -> C.
+
+Definition: Let F : C -> D be functor, Y an object of D.  A
+_universal_arrow_from_F_to_Y is a pair (X : Obj C, u : F X -> Y) such
+that for all X' : Obj C and f : F X' -> Y there exists a unique arrow
+f^# : X' -> X such that f = u . F (f^#)
+
+In other words, a universal arrow from F to Y is a terminal object in
+(F \|/ Y).  The notation f^# instead of 1_f is standard.
+
+Definition: Let F : C -> D be a functor, X an object of C.  A
+_universal_arrow_from_X_to_F is an initial object in (X \|/ F).  The
+standard notation for 0_f is f_#.
+
+As initial and terminal objects, universal arrows are unique up to
+unique isomorphisms in the respective slice categories.
+
+Notes for the beginning
+-----------------------
+
+
+MAIN IDEA: a structure is good if you can do a lot while staying in
+           the respective category.
+
+           definitions and operations should be given only in terms of
+           categorical machinery
+
+		   example: quotient group
+
+           this has the advantage that it can be translated to other
+           categories
+
+
+
+MAIN EXAMPLE: smallest element in a preorder
+              might not exist
+              might not be unique, but is equivalent to all others
+              expressed categorically: initial object
+              example (unique?) of a _universal_property_
+              translate to FUN, REL, MON, discrete set
+              
+              translate to C°!
+
+              final is maximal in preorders
+              but is the singleton maximal?  the empty set in REL? the
+              singleton in MON?
+
+NEXT EXAMPLE: products
+              A and B are given.
+              AxB in FUN = {(a, b) | a in A and b in B}
+              There are many sets isomorphic to AxB, ok, but
+              isomorphic in many different ways.
+              That shows that we do not have the "right" idea.              
+              We add structure until we are happy.
+
+              Span(A, B): A <- C -> B
+              AxB is final in Span(A, B)!
+
+              Now there is always a unique isomorphism.

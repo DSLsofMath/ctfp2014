@@ -1,0 +1,89 @@
+Lecture 6: Horner's rule, categorically
+---------------------------------------
+
+Recall the two computations in lecture 1, involving a fold after a
+triangle.
+
+We can now express folds generically; what about triangles?
+
+We started by defining tri f
+
+    tri f [] = []
+    tri f (a : as) = a : map f (tri as)
+
+and then re-writing it as a fold:
+
+    tri f = foldr consMap [] where consMap f x xs = x : map f xs
+
+In categorial notation, we have
+
+    tri f 
+  =   { consMap is morally Cons . (id x map) }
+    fold (Nil v (Cons . (id x map f)))
+  =   { v . + fusion }
+    fold ((Nil v Cons) . (id_1 + id x map f))
+  =   { identifying the elements of the initial algebra }
+    fold (in . F (id, uF f))
+
+Thus, we obtain the categorical definition
+
+   tri f = fold (in . F (id, uF f))
+
+The question we had asked was: when does a fold after a triangle fuse
+to a fold, i.e., when do we have
+
+   fold f . tri g = fold h
+
+Let us do some type inferencing:
+
+   tri g  : uF A -> uF A
+   g      : A -> A
+   fold f : uF A -> B
+   f      : F (A, B) -> B
+   fold h : uF A -> B
+   h      : F (A, B) -> B
+
+   fold f . tri g = fold h
+  <=>  { definition tri }
+   fold f . fold (in . F (id, uF g)) = fold h
+  <=   { fusion }
+   fold f . in . F (id, uF g) = h . F (id, fold f)
+  <=>  { universal property }
+   f . F (id, fold f) . F (id, uF g) = h . F (id, fold f)
+  <=>  { functor }
+   f . F (id , fold f . uF g) = h . F (id, fold f)
+  <=>  { fold-map fusion }
+   f . F (id, fold (f . F (g, id))) = h . F (id, fold f)
+  <=   { postulating "distributivity" to get F (id, fold f) on the
+         LHS, i.e., we need an arrow x : B -> B such that
+         fold (f . F (g, id)) = x . fold f }
+   f . F (id, x . fold f) = h . F (id, fold f)
+  <=>  { functor }
+   f . F (id, x) . F (id, fold f) = h . F (id, fold f)
+  <=   { . is functional }
+   f . F (id, x) = h
+ 
+What can we pick for "x"?  The typing above shows: there is not useful
+arrow B -> B.  The identity, id : B -> B, is not useful here, since it
+would give us
+
+    fold (f . F (g, id)) = id . fold f = fold f
+
+i.e., the condition that the action of g can be "thrown away".
+
+The results obtained from the type inference were too general.  Let us
+be less ambitious, and put B = A.  Thus, we need to find one "useful"
+arrow A -> A, so we can pick g and require
+
+    fold (f . F (g, id)) = g . fold f 
+
+Thus, we have shown
+
+        +-----------------------------------------------+
+        | If fold (f . F (g, id)) = g . fold f, we have |
+        |    fold f . tri g = fold (f . F (id, g))      |  
+        +-----------------------------------------------+
+
+Exercise: check that specializing this result gives the examples of
+Lecture 1 (the classical Horner rule and the binary hyperproduct).
+Work out the example of "depth".
