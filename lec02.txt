@@ -8,17 +8,17 @@ Preorders as first-order theories
 
 A first-order theory is one expressed in the language of first-order
 logic, i.e. using the logical connectives, the forall and exists
-quantifiers ranging over the entire universe of discourse, the identity
-symbol, and function and relation symbols specific to the theory,
-together with first-order axioms about these function and relation
-symbols.  
+quantifiers ranging over the entire universe of discourse, the
+identity (equality) symbol (=), and function and relation symbols
+specific to the theory, together with first-order axioms about these
+function and relation symbols.
 
 As an example, consider the language of preorders.  It contains, in its
 simplest form, one symbol: "[=" (ASCII rendition of a \sqsubseteq").
 There are two axioms:
 
 1.  reflexivity:
-        forall x x [= x 
+        forall x x [= x
 
 2.  transitivity:
         forall x forall y forall z x [= y & y [= z => x [= z
@@ -68,7 +68,7 @@ theory.
         and the "target" of f, respectively.  We shall use the notation f :
         A -> B for src f = A and tgt f = B.
 
-    A partial operation on arrows, o.  
+    A partial operation on arrows, o.
 
        If f : A -> B and g : B -> C, then  g o f is defined and
        denotes an arrow A -> C.
@@ -81,7 +81,7 @@ theory.
 
        forall f : A -> B    f o id_A = id_B o f = f
 
-       forall f : A -> B, g : B -> C, h : C -> D    
+       forall f : A -> B, g : B -> C, h : C -> D
           h o (g o f) = (h o g) o f
 
 A "category" is a model of this theory.
@@ -105,10 +105,10 @@ category"), most of which are of one of four kinds:
 
     1.1  FUN (also called SET or ENS): total functions
 
-         objects variables denote sets
+         object variables denote sets
          arrow variables denote total (typed) functions
          src and tgt are the source and targets of the functions
-         composition is function composition: 
+         composition is function composition:
               h = g o f <=> h x = g (f x)
          identity arrows are identity functions
 
@@ -117,7 +117,7 @@ category"), most of which are of one of four kinds:
          objects: sets
          arrows: partial (typed) functions
          src and tgt are the source and targets of the functions
-         composition is partial function composition: 
+         composition is partial function composition:
              h = g o f <=> for all x, if f defined at x and g defined
                         at f x, then h defined at x and h x = g (f x)
          id: identity functions
@@ -127,7 +127,7 @@ category"), most of which are of one of four kinds:
          objects: sets
          arrows: (typed) relations
 
-         composition: 
+         composition:
              if R : A -> B, S : B -> C then
                 a (S o R) c <=> exists b in B  a R b and b S c
          id: identity functions
@@ -142,7 +142,7 @@ category"), most of which are of one of four kinds:
     1.2'  untyped relations
 
 2.  Object variables ranging over sets with a given structure
-         
+
     2.1 MON
 
         objects: monoids
@@ -168,19 +168,23 @@ category"), most of which are of one of four kinds:
 
 3. Object variables or arrow variables range over elements of a set
 
-    3.1 discrete category
-       
-        only identity arrows
+    3.1 discrete category (for a set S)
+
+        objects: the elements of S
+        arrows: only identity arrows
 
         remark: every set can therefore be seen as a category
 
-    3.2 preorder
+    3.2 preorder category (for a preorder (S, [=))
 
-        for every pair (A, B) only one arrow A -> B
+        objects: the elements of S
+        arrows: for every pair (A, B) with A [= B there is only one arrow A -> B
 
-        A -> B can be interpreted as A [= B
+        (Thus A -> B can be interpreted as A [= B.)
 
-        in a preorder, if f : A -> B and g : B -> A, then A ~ B
+        in a preorder, if f : A -> B and g : B -> A, then A ~ B (where
+        a ~ b =def (a [= b & b [= a) is the equivalence relation
+        induced by the preorder).
 
     3.3 monoid
 
@@ -188,7 +192,7 @@ category"), most of which are of one of four kinds:
 
     3.4 group
 
-        only one object, all arrows are isomorphisms        
+        only one object, all arrows are isomorphisms
 
     Negative examples: take an operation that is not associative, such
     as Float with + or *
@@ -207,7 +211,7 @@ Remark (Flondor): category generalizes sets, order, structure
 
         objects: Obj C = X
 
-        arrows:  if a in X and b in X and f : a -> b in C, 
+        arrows:  if a in X and b in X and f : a -> b in C,
                  then f : a -> b in X
 
         composition, identities given by C
@@ -246,7 +250,7 @@ combinations of such structures (for example, products of preorders,
 groups, etc.) or substructures (e.g. ideals of a ring).  Category theory
 suggests that these combinations be described in terms of the morphisms
 of structures, instead of in terms of their set-theoretical
-construction.  
+construction.
 
 In general, the "richer" the structure, the more results can be obtained
 by "staying within the structure", i.e., operating at the level of the
@@ -266,7 +270,7 @@ Using categorical language
 
 As an example for the advantages of expressing concepts in categorical
 terms instead of set-theoretical ones, consider the notion of "maximal
-element in a preorder".  
+element in a preorder".
 
 Consider a preorder (X, [=).  An element m of X is said to be maximal if
 
@@ -275,9 +279,9 @@ Consider a preorder (X, [=).  An element m of X is said to be maximal if
 Some preorders may not have maximal elements (take a discrete preorder
 for an immediate example); others may have a unique maximal element (P
 A, the powerset of A, has A as maximal element under inclusion); yet
-others may have several (P A - A, for example).
+others may have several (P A - {A}, for example).
 
-If m and m' are both maximal, then they are _equivalent_: 
+If m and m' are both maximal, then they are _equivalent_:
 
     m [= m' & m' [= m => m ~ m'
 
@@ -291,7 +295,7 @@ Let X be a preorder category.  An object m is said to be maximal if
 If m and m' are both maximal, then they are _isomorphic_:
 
     m and m' maximal
-=>    { definition of maximal } 
+=>    { definition of maximal }
     exist f : m -> m' and g : m' -> m
 =>    { since in a preorder h : a -> b, k : a -> b => h = k }
     g o f = id_m and f o g = id_m'
@@ -316,7 +320,7 @@ Thus, we have, switching to standard terminology ("terminal" instead of
 "maximal"):
 
 Definition:  Let C be a category.  An object 1 is said to be _terminal_
-if 
+if
 
     forall x : Obj C there exists a _unique_ arrow x -> 1
 
