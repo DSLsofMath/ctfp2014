@@ -11,7 +11,7 @@ meet of x and y if it satisfies
 
 There might be several meets of x and y, but they are all equivalent:
 
-    u, v meets of x and y  
+    u, v meets of x and y
 =>    { definition of meet }
     u [= v  &  v [= u
 =>    { equivalence }
@@ -45,7 +45,7 @@ category Span(a, b) is defined by
 
     objects: spans, i.e. pairs of arrows (f : c -> a, g : c -> b)
 
-    arrows:  an arrow from (f : c -> a, g : c -> b) to 
+    arrows:  an arrow from (f : c -> a, g : c -> b) to
              (h : d -> a, k : d -> b) is a C-arrow l : c -> d such that
                   c
                 / | \
@@ -62,7 +62,7 @@ category Span(a, b) is defined by
              h o l = f  &  k o l = g
 
 
-     The product of a and b, denoted axb is a terminal 
+     The product of a and b, denoted axb is a terminal
      object in Span(a, b), that is, it consists of a pair
      (fst : axb -> a, snd : axb -> b) such that, for any other pair
      (f : c -> a, g : c -> b), we have a unique arrow f ^ g such that
@@ -129,9 +129,9 @@ More categories out of categories: duality and product
 
         arrows: same as the arrows of C
                 similarly to objects, we'll use f° when referring to f
-                in C° 
-                
-        src and tgt:  
+                in C°
+
+        src and tgt:
 
                 src° = tgt
                 tgt° = src
@@ -143,16 +143,17 @@ More categories out of categories: duality and product
         composition: for f° : a° -> b° and g° : b° -> c°
                      g° o° f° = (f o g)°
 
-       
+
         Remark: (C°)° = C
 
-        Duality 
+        Duality
         -------
 
-        Let prop(C) be a statement about arrows and object in
-        C.  "Inverting the arrows" in prop(C), we obtain a statement
-        about C°.  If prop(C) holds for all categories, then prop(C°)
-        will also hold: 
+        Let prop(C) be a statement about arrows and object in C. By
+        "Inverting the arrows" in prop(C), we obtain a statement about
+        C°.  If prop(C) holds for all categories, then prop(C°) will
+        also hold:
+
            forall C prop(C) <=> forall C prop(C°)
 
 
@@ -208,7 +209,7 @@ Examples:
              v                        v
              Y            F Y = A ---------> Y
 
-        
+
   Math: powerset
 
   Between structures: monotonic functions, homomorphism (see Hutton,
@@ -221,7 +222,7 @@ Examples:
   F X = X -> A, F Y = Y -> A, given f : X -> Y and xToA : X -> A we
   cannot make a yToA : Y -> A
 
-  But given f and yToA, we can make an xToA: 
+  But given f and yToA, we can make an xToA:
         xToA = yToA o f
 
   So it's not a functor FUN -> FUN, but rather FUN° -> FUN.
@@ -240,4 +241,14 @@ Examples:
    |  v                          v
   (C, D)               Hom(C, D) = {beta : C -> D}
 
-  
+  Note that the object part of this functor takes an object of (C° x
+  C) which is a pair of objects (A, B) from the category C, to a set
+  (which is an object of FUN). This set contains all the arrows (with
+  source A and target B) from category C.
+
+  The arrow part takes an arrow of (C° x C) which is a pair of
+  C-arrows (f, g). The result is an arrow in FUN (a normal
+  set-theoretic function s = Hom(f, g)) from one set of arrows Hom(A,
+  B) to another set of arrows Hom(C, D). The function s is defined
+  using the the arrow composition in C twice, surrounding its argument
+  alpha with suitably typed C-arrows.

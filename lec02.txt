@@ -57,6 +57,7 @@ although a preorder, will almost certainly not appear either.
 
 Categories
 ----------
+
 Category theory is usually presented as a two-sorted first-order
 theory.
 
