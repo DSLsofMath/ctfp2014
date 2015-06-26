@@ -40,7 +40,7 @@ denote it by "x ^ y".
 
 We can now carry this over to arbitrary categories.
 
-Definition: Given a category C, and two object a, b : Obj C, the
+Definition: Given a category C, and two objects a, b : Obj C, the
 category Span(a, b) is defined by
 
     objects: spans, i.e. pairs of arrows (f : c -> a, g : c -> b)
@@ -67,7 +67,7 @@ category Span(a, b) is defined by
      (fst : axb -> a, snd : axb -> b) such that, for any other pair
      (f : c -> a, g : c -> b), we have a unique arrow f ^ g such that
 
-             fst o f ^ g = f & snd o f ^ g = g
+             fst o f ^ g = f   &   snd o f ^ g = g
 
 In FUN, the product of two sets is the pair consisting of the two
 projection functions associated to the cartesian product.  In REL it is

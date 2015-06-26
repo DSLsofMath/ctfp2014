@@ -1,6 +1,9 @@
 Lecture 4
 ---------
 
+{- Notational update - from now on we write an infix period instead of
+an infix o for arrow composition. -}
+
 Recall:
 
 The product of X and Y is the terminal object in Span(X, Y).
@@ -17,7 +20,7 @@ We obtained:
 
    i.e. there exists a unique arrow _in C_, denoted f ^ g, such that
 
-   fst . f ^ g = f and snd . f ^ g = g
+   fst . f ^ g = f   and   snd . f ^ g = g
 
 2. (Reflection) fst ^ snd = id
 
@@ -30,7 +33,7 @@ The product functor
 Let C be a category such that X x Y exists for all X, Y (i.e., C "has
 products").
 
-Consider the mapping 
+Consider the mapping
 
     (x) : C x C -> C
     (x) (X, Y) = X x Y
@@ -43,8 +46,8 @@ How should (x) act on arrows?
      |  |                |
      v  v                v
     (C, D)             C x D
-    
-In FUN it's obvious: 
+
+In FUN it's obvious:
 
     (f x g) (a, b) = (f a, g b)
 
@@ -59,7 +62,7 @@ and define fxg = h^k.
 
 We basically have only one choice:
 
-    f x g = (f o fst) ^ (g o snd)
+    f x g = (f . fst) ^ (g . snd)
 
 Is this a functor?
 
@@ -85,7 +88,7 @@ Is this a functor?
   =  { definition x }
     (f . h) x (g . k)
 
-Exercise 
+Exercise
 --------
 
   Prove the "x . ^" fusion law:
@@ -118,9 +121,13 @@ Remarks
             f v g . h + k = (f . h) v (g . k)
 
     2.  In Haskell, the product of X and Y is denoted "(X, Y)" and the
-    coproduct "Either X Y".  The "pair" combinator is not defined in
-    the standard prelude, but "case" is, and is called "either".
-    Neither (+) nor (x) can be instances of "Functor".
+    coproduct "Either X Y". Note that the Haskell notation (X, Y) for
+    product types is best avoided in category theory to avoid
+    confusion.
+
+    The "pair" combinator (^) is not defined in the standard prelude,
+    but "case" (v) is, and is called "either".  Neither (+) nor (x)
+    can be instances of "Functor".
 
 
 Exponentials
@@ -130,9 +137,9 @@ We want to represent "exponentials", i.e. function spaces, in a
 categorical way.  (The name comes from the notation A^B for B -> A,
 which in turn is due to cardinality considerations.)
 
-The main feature of an element f : A^B is that given a b : B I can use
-it to produce an element of A (by applying f to b), in other words the
-operation 
+The main feature of an element f : A^B is that given a (b : B) I can
+use it to produce an element of A (by applying f to b), in other words
+the operation
 
     apply : A^B x B -> A
 
@@ -160,7 +167,7 @@ terminal objects.
 
    For every f : X x B -> A there exists a unique arrow 1_f : f ->
    apply in Exp(A, B), that is, a unique arrow 1_f : X -> A^B in C
-   such that 
+   such that
       apply . (1_f x id) = f
 
    Remark: 1_f is usually denoted "curry f".
@@ -184,23 +191,27 @@ terminal objects.
 
 Remark
 ------
+
     It is important to distinguish between Hom(A, B) and B^A.  The
     first is always an object in FUN, i.e., a set; the second is an
-    object in C.
+    object in C. Every category has Hom-sets for all objects A and B,
+    but only some categories has exponentials.
 
 Functors and datatypes
 ----------------------
 
 Basically, every type constructor in Haskell defines a functor,
 though, as we've seen, not always one which can be expressed as an
-instance of the typeclass Functor.
+instance of the typeclass Functor. (For this presentation we will work
+with an idealised subset of Haskell where all values are total, thus
+ignoring error values and non-termination.)
 
 For example:
 
 > data D a b c = C0 | C1 a b | C2 (Nat -> c)
 
 The type constructor D takes three types and constructs a new type,
-consisting of 
+consisting of
 
      o  a given element, C0
      o  pairs of elements, an "a" and a "b", labelled with C1
@@ -289,12 +300,12 @@ The notion of F-algebra represents the categorical version of
 "algebra" (as defined in universal algebra).
 
 A morphism from an F-algebra f1 : F X1 -> X1 to f2 : F X2 -> X2
-is an arrow f : X1 -> X2 such that 
+is an arrow f : X1 -> X2 such that
 
            f1
     F X1 --------> X1
      |             |
- F f |             | f            f o f1 = f2 o F f
+ F f |             | f            f . f1 = f2 . F f
      |             |
      v             v
     F X2 --------> X2
@@ -318,7 +329,7 @@ carrier by "uF" (in Latex $\mu\ F$).
 
 Examples:
 
-    o  Z v S : 1 + Nat -> Nat is the initial algebra of 
+    o  Z v S : 1 + Nat -> Nat is the initial algebra of
            F X = 1 + X
            F f = id_1 + f
 
@@ -339,17 +350,17 @@ Examples:
           F f (Left ())      = Left ()
           F f (Right (a, x)) = Right (a, f x)
 
-       Note: this should not be confused with "map"!
+       Note: this should not be confused with "map" for lists!
 
     o  Tip v Bin : A + Tree A x Tree A -> Tree A is the initial
-       algebra of 
+       algebra of
           F X = A + X x X
           F f = id_A + f x f
 
        In Haskell-like terms
 
           F f : Either A (X, X) -> Either A (Y, Y)
-          F f (Left a)        = Left a
+          F f (Left a)         = Left a
           F f (Right (x1, x2)) = Right (f x1, f x2)
 
 (end of examples, back to main thread)
@@ -366,7 +377,7 @@ Alg(F) to C.
 
   <=>  { definition of objects and arrows in Alg(C) }
 
-   For all f : F X -> X in C there exists 
+   For all f : F X -> X in C there exists
    a unique arrow 0_f : uF -> X such that 0_f . in = f . F 0_f
 
    The usual notation for 0_f is "([ f ])", i.e., "banana brackets".
@@ -385,23 +396,27 @@ Alg(F) to C.
 
         o  for Nat, we have in = Z v S and F X = 1 + X
 
-              f : 1 + X -> X 
+              f : 1 + X -> X
            =>  { introducing e = f . inl, g = f . inr }
               f = e v g
 
               fold (e v g) . (Z v S)
-           =   { v fusion }
-              (fold (e v g) . Z) v (fold (e v g) . S) (*)
-           =   { fold universal property }
+           =   { fold universal property with f = e v g and in = Z v S}
               (e v g) . F (fold (e v g))
            =   { definition of F }
               (e v g) . (id_1 + fold (e v g))
            =   { v . + fusion }
-              e v (g . fold (e v g))                   (**)
+              e v (g . fold (e v g))                    (*)
 
-              (*) = (**) 
-            =>  { f v g = h v k <=> f = h and g = k }
-               fold (e v g) . Z = e  and
+           and we also have
+
+              fold (e v g) . (Z v S)
+           =   { v fusion }
+              (fold (e v g) . Z) v (fold (e v g) . S)   (**)
+
+           Using (*) = (**) and { f v g = h v k  <=>  f = h & g = k } we get
+
+               fold (e v g) . Z = e                  &
                fold (e v g) . S = g . fold (e v g)
 
            In Haskell-like terms:
@@ -420,22 +435,22 @@ Alg(F) to C.
                fold (e v g) . (Nil v Cons)
             =   { v fusion }
                (fold (e v g) . Nil) v (fold (e v g) . Cons)     (*)
-            =   { fold universal property }
+            =   { step back and use fold universal property }
                (e v g) . F (fold (e v g))
             =   { definition F }
                (e v g) . (id_1 + id_A x (fold (e v g)))
             =   { v . + fusion }
                e v (g . (id_A x (fold (e v g))))                (**)
 
-               (*) = (**) 
+               (*) = (**)
             =>  { f v g = h v k <=> f = h and g = k }
                fold (e v g) . Nil  = e
-               fold (e v g) . Cons = g . (id_A x (fold (e v g)))           
+               fold (e v g) . Cons = g . (id_A x (fold (e v g)))
 
            In Haskell-like terms:
 
                fold e g Nil         = e
-               fold e g (Cons a as) = g (a, fold e g as) 
+               fold e g (Cons a as) = g (a, fold e g as)
 
            Example:
 
@@ -443,6 +458,3 @@ Alg(F) to C.
                (++) = fold id f where f (a, g) = Cons a . g
 
 Exercise: work out the definition of fold for Tree.
-
-
-    
