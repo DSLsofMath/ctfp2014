@@ -13,11 +13,11 @@ We started by defining tri f
 
 and then re-writing it as a fold:
 
-    tri f = foldr consMap [] where consMap f x xs = x : map f xs
+    tri f = foldr consMap []  where  consMap f x xs = x : map f xs
 
 In categorial notation, we have
 
-    tri f 
+    tri f
   =   { consMap is morally Cons . (id x map) }
     fold (Nil v (Cons . (id x map f)))
   =   { v . + fusion }
@@ -37,11 +37,11 @@ to a fold, i.e., when do we have
 Let us do some type inferencing:
 
    tri g  : uF A -> uF A
-   g      : A -> A
-   fold f : uF A -> B
-   f      : F (A, B) -> B
-   fold h : uF A -> B
-   h      : F (A, B) -> B
+   g      :    A ->    A
+   fold f : uF A          -> B
+   f      : F (A, B)      -> B
+   fold h : uF A          -> B
+   h      : F (A, B)      -> B
 
    fold f . tri g = fold h
   <=>  { definition tri }
@@ -55,15 +55,15 @@ Let us do some type inferencing:
   <=>  { fold-map fusion }
    f . F (id, fold (f . F (g, id))) = h . F (id, fold f)
   <=   { postulating "distributivity" to get F (id, fold f) on the
-         LHS, i.e., we need an arrow x : B -> B such that
-         fold (f . F (g, id)) = x . fold f }
-   f . F (id, x . fold f) = h . F (id, fold f)
+         LHS, i.e., we need an arrow y : B -> B such that
+         fold (f . F (g, id)) = y . fold f }
+   f . F (id, y . fold f) = h . F (id, fold f)
   <=>  { functor }
-   f . F (id, x) . F (id, fold f) = h . F (id, fold f)
+   f . F (id, y) . F (id, fold f) = h . F (id, fold f)
   <=   { . is functional }
-   f . F (id, x) = h
- 
-What can we pick for "x"?  The typing above shows: there is not useful
+   f . F (id, y) = h
+
+What can we pick for "y"?  The typing above shows: there is no useful
 arrow B -> B.  The identity, id : B -> B, is not useful here, since it
 would give us
 
@@ -73,15 +73,15 @@ i.e., the condition that the action of g can be "thrown away".
 
 The results obtained from the type inference were too general.  Let us
 be less ambitious, and put B = A.  Thus, we need to find one "useful"
-arrow A -> A, so we can pick g and require
+arrow y : A -> A, so we can pick y := g and require
 
-    fold (f . F (g, id)) = g . fold f 
+    fold (f . F (g, id)) = g . fold f
 
 Thus, we have shown
 
         +-----------------------------------------------+
         | If fold (f . F (g, id)) = g . fold f, we have |
-        |    fold f . tri g = fold (f . F (id, g))      |  
+        |    fold f . tri g = fold (f . F (id, g))      |
         +-----------------------------------------------+
 
 Exercise: check that specializing this result gives the examples of
