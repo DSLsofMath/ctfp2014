@@ -6,15 +6,15 @@ Example:  L = Pre_Maybe, type fusion
 
 Consider functors L, F, G such that
 
-    L o F ~ G o L
+    L . F ~ G . L
 
-i.e., we have a natural isomorphism between L o F and G o L.
+i.e., we have a natural isomorphism between L . F and G . L.
 
 Then
 
-    L o F ~ G o L
+    L . F ~ G . L
   =>  { specialize to the fixed point of F }
-    (L o F) (u F) ~ (G o L) (u F)
+    (L . F) (u F) ~ (G . L) (u F)
   <=> { composition }
     L (F (u F)) ~ G (L (u F))
   <=> { u F ~ F (u F) }
@@ -27,7 +27,7 @@ if L is a left adjoint, then L (u F) is the smallest fixed point of G,
 i.e.:
 
   +------------------------------------------------------+
-  | L o F ~ G o L  and L left adjoint  =>  L (u F) ~ u G |
+  | L . F ~ G . L  and L left adjoint  =>  L (u F) ~ u G |
   +------------------------------------------------------+
 
 This is known as _type_fusion_ (See section 8 of Hinze's "Adjoint Folds" paper.)
@@ -40,9 +40,9 @@ where
 
     Maybes a = Done | Skip (Maybes a) | Yield a (Maybes a)
 
-This translates to 
+This translates to
 
-    List o Maybe ~ Maybes
+    List . Maybe ~ Maybes
 
 in FUN^FUN.
 
@@ -63,17 +63,17 @@ Maybes is the fixed point of
 
    u G = Maybes
 
-If we want to show 
+If we want to show
 
-   (u F) o Maybe ~ (u G)
+   (u F) . Maybe ~ (u G)
 
 by applying type fusion, L needs to be a functor in FUN^FUN such that
 
-   L (u F) = (u F) o Maybe
+   L (u F) = (u F) . Maybe
 
 therefore, we can take
 
-   L F       =  F o Maybe
+   L F       =  F . Maybe
    L alpha   =  alpha_Maybe
 
 L is the precomposition with Maybe.
@@ -87,7 +87,7 @@ The derivation is similar to the one for the projection functor:
 
     alpha : L H1 -> H2
   <=>  { definition L }
-    alpha : H1 o Maybe -> H2
+    alpha : H1 . Maybe -> H2
    =>  { introducing arbitrary set Y }
     alpha_Y : H1 (Maybe Y) -> H2
   <=> { introducing H : FUN° -> FUN, H X = { g : H1 X -> H2 Y} }
@@ -120,16 +120,16 @@ Exercise: show that phi is a natural isomorphism.
 
 The distributivity condition
 
-    L o F ~ G o L
+    L . F ~ G . L
 
-with L = o Maybe, F H = K 1 + Id x H, G H = 1 + H + Id x H is easily
+with L = . Maybe, F H = K 1 + Id x H, G H = 1 + H + Id x H is easily
 checked:
 
-    (L o F) H X
+    (L . F) H X
   =  { composition }
     (L (F H)) X
   =  { definition L }
-    ((F H) o Maybe) X
+    ((F H) . Maybe) X
   =  { composition }
     F H (Maybe X)
   =  { definition F }
@@ -143,4 +143,4 @@ checked:
   =  { definition L }
     G (L H) X
   =  { composition }
-    (G o L) H X
+    (G . L) H X

@@ -1,7 +1,7 @@
 Lecture 9: Applications
 -----------------------
 
-We have seen that the equation 
+We have seen that the equation
 
     x . L in = psi x
 
@@ -15,14 +15,14 @@ types of the elements involved:
     C, D categories, X : Obj D
     F : C -> C  the endofunctor giving rise to the initial F-algebra
     in : F uF -> uF
-    L : C -> D 
+    L : C -> D
     x : L uF -> X  the solution
     psi_Y : { L Y -> X } -> { L (F Y) -> X }
     R : D -> C
     phi_(Y, Z) : { L Y -> Z } -> { Y -> R Z }
     phi'_(Y, Z) : { Y -> R Z } -> { L Y -> Z }
     fold_Y : { F Y -> Y } -> { uF -> Y }
-    
+
 Therefore:
 
     phi' (fold (phi (psi (phi' id)))) : L uF -> X
@@ -40,7 +40,7 @@ Therefore:
 Reading this backwards, we have that the unique solution is
 constructed by starting with the identity on R X, transposing it via
 the adjunction to create an argument suitable for psi, which gives us
-an L o F o R algebra, which we transform into an F-algebra via phi.
+an L . F . R algebra, which we transform into an F-algebra via phi.
 This is given to the fold, and the result is translated to the
 solution via phi'.
 
@@ -114,8 +114,8 @@ Therefore, the machinery from the previous lecture does apply, and we have
    x1 = fst . fold (f1 ^ f2)  and
    x2 = snd . fold (f1 ^ f2)  where
      (f1, f2) = psi (fst, snd)
-   
-The types of f1 and f2 are 
+
+The types of f1 and f2 are
 
    f1 : F (X1 x X2) -> X1
    f2 : F (X1 x X2) -> X2
@@ -188,7 +188,7 @@ the factorial:
         |            |
   para f|            | F (id ^ para f)
         |            |
-        v            v          
+        v            v
         X <-------- F (T x X)
               f
 
@@ -203,7 +203,7 @@ observing that the above diagram commutes if and only if the diagram
               |                    |
  (id, para f) |                    | (F id, F (id ^ para f))
               |                    |
-              v                    v          
+              v                    v
             (T, X) <---------- (F T,  F (T x X))
                      (in, f)
 
@@ -215,7 +215,7 @@ the equation
 
     (id, para f) . Dup in = psi (id, para f)
 where
-    psi (h1, h2) = (in, f) o (F h1, F (id ^ h2))
+    psi (h1, h2) = (in, f) . (F h1, F (id ^ h2))
 
 has a unique solution.  But we have just seen above that the equation
 
@@ -234,7 +234,7 @@ that x1 = id.
 Example 4: L = (x A)
 ----------
 
-Solutions to 
+Solutions to
 
     x . (in x id) = psi x
 

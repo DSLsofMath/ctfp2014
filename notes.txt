@@ -34,7 +34,7 @@ Yoneda 1:
 
    An important property is
      A ~ B <=> E A ~ E B
-   
+
 
 
     h 0 = e
@@ -111,16 +111,16 @@ we relax to arrows F Y -> X with arbitrary Y and X?
 The category of such "generalized algebras" is a special kind of
 _comma_category_.
 
-Definition: 
+Definition:
 -----------
-  Let 
-    A, B, C categories, 
+  Let
+    A, B, C categories,
     F : A -> C, G : B -> C functors
   The _comma_category_ (F \|/ G) (imagine a downward arrow):
     Objects: triples (X : Obj A, Y : Obj B, f : F X -> G Y)
     Arrows:  g : (X1, Y1, f1) -> (X2, Y2, f2) is a pair of arrows
              (g1, g2) : (X1, Y1) -> (X2, Y2) in AxB such that
-             f2 o F g1 = G g2 o f1
+             f2 . F g1 = G g2 . f1
 
   If one of the functors is the identity, we write the category in its
   place.  If one of the functors is constant, we write the object of
@@ -157,7 +157,7 @@ therefore fix one of them, say the target:
 Can we find a terminal object in (F \|/ C) for any X?
 
 It is easy to see that the answer is no.  Moreover, there is a
-somewhat unnatural "factoring" going on at W.  The arrows f and (g' o
+somewhat unnatural "factoring" going on at W.  The arrows f and (g' .
 f) are both generalized F-algebras, there seems to be no clear reason
 for separating them (as opposed to the case of F-algebras, where all
 arrows were clearly separted by types).
@@ -170,8 +170,8 @@ here we finally have non-trivial terminal generalized F-algebras:
          ^           ^
          |          /
  F (f^#) |         / f
-         |        /  
-         |       /       
+         |        /
+         |       /
          |      /
          |     /
          |    /
@@ -200,7 +200,7 @@ Examples:
     a terminal object in (1_C \|/ 1).  We have
 
     for any object Z in C and any arrow f : 1_C Z -> 1 there exists a
-    unique arrow f^# : Z -> T 1 in C such that 
+    unique arrow f^# : Z -> T 1 in C such that
         eps_1 . 1_C (f^#) = f
   <=> { f : 1_C Z -> * <=> f = id_*, all equalities between arrows
         hold in 1 }
@@ -218,7 +218,7 @@ motion:
     for any f : Obj (dup \|/ (X1, X2)) there exists a unique 1_f : f -> eps_X
   <=> { definition of (dup \|/ (X1, X2)) }
     for any Y : Obj C, any arrow f : dup Y -> (X1, X2) there exists a unique
-    arrow  f^# : Y -> T (X1, X2) such that 
+    arrow  f^# : Y -> T (X1, X2) such that
        eps_X . dup f^# = f
   <=> { f : dup Y -> (X1, X2) <=> f = (f1, f2) }
     for any Y : Obj C, any arrows f1 : Y -> X1 and f2 : Y -> X2 there
@@ -235,7 +235,7 @@ motion:
     exists a unique arrow f1 ^ f2 : Y -> X1 x X2 such that
        fst . f1 ^ f2 = f1
        snd . f1 ^ f2 = f2
-    
+
 Therefore, we obtain an alternative characterization of the product of
 X1 and X2.
 
@@ -260,7 +260,7 @@ Definition: The _comma_category_ (F \|/ G) (imagine a downward arrow):
     Objects: triples (X : Obj A, Y : Obj B, f : F X -> G Y)
     Arrows:  g : (X1, Y1, f1) -> (X2, Y2, f2) is a pair of arrows
              (g1, g2) : (X1, Y1) -> (X2, Y2) in AxB such that
-             f2 o F g1 = G g2 o f1
+             f2 . F g1 = G g2 . f1
 
 If one of the functors is the identity, we write the category in its
 place.  If one of the functors is constant, we write the object of its
@@ -309,7 +309,7 @@ MAIN EXAMPLE: smallest element in a preorder
               expressed categorically: initial object
               example (unique?) of a _universal_property_
               translate to FUN, REL, MON, discrete set
-              
+
               translate to C°!
 
               final is maximal in preorders
@@ -321,7 +321,7 @@ NEXT EXAMPLE: products
               AxB in FUN = {(a, b) | a in A and b in B}
               There are many sets isomorphic to AxB, ok, but
               isomorphic in many different ways.
-              That shows that we do not have the "right" idea.              
+              That shows that we do not have the "right" idea.
               We add structure until we are happy.
 
               Span(A, B): A <- C -> B

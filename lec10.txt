@@ -32,7 +32,7 @@ Emb A to F, and this isomorphism is natural in both A and F.
 Remark:
 
     The naturality condition for an alpha : Emb A -> F is
-    
+
                              alpha_X
         X           Emb A X ---------> F X
         ^              |                |
@@ -41,13 +41,13 @@ Remark:
         |              v                v
         Y           Emb A Y ---------> F Y
                              alpha_Y
-    
+
         alpha_Y . (. h) = F h . alpha_X
       <=>  { extensionality }
-        for any f : X -> A   
+        for any f : X -> A
         alpha_Y (f . h) = F h (alpha_X f)
 -- End remark
-    
+
 Proof:
 
     Let e : F A.  We need to construct a natural transformation
@@ -69,9 +69,9 @@ so we can take
 
     alpha_X f = F f e
 
-Exercise: check the naturality conditions 
-    a) for alpha, 
-    b) for yon : F A -> { alpha : Emb A -> F } 
+Exercise: check the naturality conditions
+    a) for alpha,
+    b) for yon : F A -> { alpha : Emb A -> F }
            (yon e)_X f = F f e
 
 Now take alpha : Emb A -> F.  We want to determine an element of F A.
@@ -118,10 +118,10 @@ We want to show that yon . yon° = id and yon° . yon = id
 
 ---- end of Yoneda lemma
 
-We return to the question of finding a right adjoint for 
+We return to the question of finding a right adjoint for
 
     L G = G A, L alpha = alpha_A
-    
+
 i.e, R and phi such that
 
     phi : { f : G A -> Y } -> { alpha : G -> R Y }
@@ -232,11 +232,11 @@ Other applications of the Yoneda lemma
     F f1 = F f2  <=>  f1 = f2 (*)
 
     We have:
-    
+
     F X ~ F Y
   =>  { isomorphism }
     exists h : F X -> F Y and h° : F Y -> F X s.t.
-    h o h° = id and h° o h = id
+    h . h° = id and h° . h = id
 
     Let f = y° h and g = y° h°
 
@@ -246,17 +246,17 @@ Other applications of the Yoneda lemma
   =  { F functor }
     id
   =  { h iso }
-    h o h°
+    h . h°
   =  { using f and g as above }
-    F f o F g
+    F f . F g
   =  { F functor }
-    F (f o g)
+    F (f . g)
 
   Therefore, by (*):
 
-    f o g = id
+    f . g = id
 
-   Similarly, we obtain g o f = id.  Therefore, g = f°, and X ~ Y.
+   Similarly, we obtain g . f = id.  Therefore, g = f°, and X ~ Y.
 
    Corollary: Emb X ~ Emb Y <=> X ~ Y
    ----------
@@ -296,7 +296,7 @@ Other applications of the Yoneda lemma
 
     Recall the definining equation for Mendler-style folds:
 
-    x o in = psi x
+    x . in = psi x
 
     where
 
@@ -333,7 +333,7 @@ Other applications of the Yoneda lemma
   =  { definition yon }
     G x (psi id)
   =  { definition G }
-    psi id . F x    
+    psi id . F x
 
     Therefore, we obtain an alternative proof of the result derived in
     lecture 7.
