@@ -36,11 +36,13 @@ far:
    v                 v            v
    Y                F Y          G Y
 
-This suggests that alpha : F -> G should fill in _any_ such square in
-D.
+To construct the desired diagonal arrow from F X to G Y it would help
+to first connect the two "edges" F f and G f to make a square (and
+then use a suitable composition of "edges").  This suggests that alpha
+: F -> G should fill in _any_ such square in D.
 
-Therefore alpha should be a collection of arrows of type F X -> G X,
-one for every object X in C.
+Therefore alpha should be a collection of arrows (in D) of type F X ->
+G X, one for every object X (in C).
 
 The collection cannot be arbitrary.  Above, we would obtain _two_
 arrows of the required type F X -> G Y.  Which should we pick?  To
@@ -59,7 +61,7 @@ alpha_X).
 The arrows alpha_X are sometimes referred to as the _components_ of
 the transformation alpha.
 
-A transformation alpha is _natural_ if for all f : X -> Y in C 
+A transformation alpha is _natural_ if for all f : X -> Y in C
 we have
 
     alpha_Y . F f = G f . alpha_X
@@ -77,7 +79,7 @@ Natural transformations compose, and D^C is indeed a category.
 
 Remark: sometimes (for example, in Hinze's articles) the type of a
 natural transformation is denoted by an arrow with a dot on the top:
-                
+
     alpha : F --°--> G
 
 I find this irritating, since it obscures the fact that they are the
@@ -95,7 +97,7 @@ Examples:
 
     1 : Id -> K 1
 
-    f : X -> Y          
+    f : X -> Y
 
     We have:
 
@@ -111,19 +113,19 @@ Examples:
 
   (x) : C x C -> C, (x) (X, Y) = X x Y
 
-  Fst : C x C -> C, Fst (X, Y) = X 
-    
+  Fst : C x C -> C, Fst (X, Y) = X
+
   (f, g) : (X1, Y1) -> (X2, Y2)
 
     Fst (f, g) . fst_(X1, Y1) = fst_(X2, Y2) . (f x g)
   <=>  { definitions }
-    f . fst_(X1, Y1) = fst_(X2, Y2) . 
+    f . fst_(X1, Y1) = fst_(X2, Y2) .
                        ((f . fst_(X1, Y1)) ^ (g . snd_(X1, Y1))
   <=>  { cancellation for split }
     f . fst_(X1, Y1) = f . fst_(X1, Y1)
   <=>  { duh }
     true
-  
+
 - In the above, we had Fst : C x D -> C, a "polymorphic functor", and
   fst : X x Y -> X a natural transformation.  Can we view Fst also as
   a natural transformation?  At this level of generality, no.  We
@@ -137,7 +139,7 @@ Examples:
 
     sort :: Ord a => [a] -> [a]
 
-  Is this a natural transformation?
+  Is this a natural transformation? That depends on the category.
 
   Let TORD be the category of _total_ orders and U the forgetful
   functor U : TORD -> Set, U (X, <=) = X.
@@ -146,7 +148,7 @@ Examples:
   preorders and f : X -> Y monotonic function
 
      sort . (List . U) f = (List . U) f . sort
-  <=>  { F f = f, List is map }
+  <=>  { U f = f, List on arrows is map }
      sort . map f = map f . sort
 
   Is it always the case that mapping a _monotonic_ f to a sorted list
@@ -219,7 +221,7 @@ is a natural transformation (_postcomposing_ alpha with I).
 
 Given functors F, G : A -> B and H, I : B -> C, and natural
 transformations alpha : F -> G and beta : H -> I, we can define a new
-natural transformation 
+natural transformation
 
     beta * alpha : H . F -> I . G
 
@@ -230,7 +232,7 @@ Writing the types of the elements involved we have
     beta_F  : H . F -> I . F
     beta_G  : H . G -> I . G
 
-We can see we have two choices:
+We can see we have two choices (for a type correct dep. of *):
 
     beta * alpha = beta_G . H alpha
 
@@ -238,7 +240,7 @@ or
 
     beta * alpha = I alpha . beta_F
 
-    
+
 Which should we pick?
 
     beta_(G X) . H alpha_X
@@ -266,8 +268,21 @@ We also have an "abide" law relating . and *:
 
     alpha : F -> G, beta : G -> H, delta : I -> J, gamma : J -> K
 
-    (gamma . delta) * (beta . alpha) = 
+    (gamma . delta) * (beta . alpha) =
     (gamma * beta) . (delta * alpha)
+
+Remark: "abide" comes from "above beside" as in muliplication of
+fractions (with · as multiplication):
+
+    gamma · delta     gamma   delta
+    -------------  =  ----- · -----
+     beta · alpha     beta    alpha
+
+With this comparison, "*" for natural transformations is like division
+and "." is multiplication.
+
+(end remark).
+
 
 Mendler-style folds
 -------------------
@@ -284,7 +299,7 @@ Mendler proposed the following generalisation of folds:
 
     x . in = psi x
 
-where 
+where
 
     x : uF -> X
     psi : Hom(uF, X) -> Hom(F uF, X)
@@ -298,27 +313,31 @@ i.e., the X is fixed and
     H1 Y = Hom(Y, X)
     H2 Y = Hom(F Y, X)
 
-    for f : Y2 -> Y1
-    H1 f : H1 Y1 -> H1 Y2
+    for f : Y2 -> Y1        (in C)
+    H1 f : H1 Y1 -> H1 Y2   (in Set)
     H1 f g = g . f
-    H2 f : H2 Y1 -> H2 Y2
+    H2 f : H2 Y1 -> H2 Y2   (in Set)
     H2 f g = g . F f
 
 The naturality condition gives us for every f : Y2 -> Y1
 
-    H2 f . psi = psi . H1 f
-  <=>  { extensionality }
-    psi g . F f = psi (g . f) for all g : Y1 -> X
+    H2 f . psi_Y1 = psi_Y2 . H1 f
+  <=>  { extensionality (in Set) }
+    (H2 f . psi_Y1) g = (psi_Y2 . H1 f) g  for all g : Y1 -> X
+  <=>  { Composition }
+    H2 f (psi_Y1 g) = psi_Y2 (H1 f g)      for all g : Y1 -> X
+  <=>  { Expand def. of H2 and H1 }
+    psi_Y1 g . F f = psi_Y2 (g . f)        for all g : Y1 -> X
 
 In the case of f with target X, i.e. Y1 = X, we can choose the
 identity for g:
 
-    f : Y2 -> X 
+    f : Y2 -> X
   =>  { id : X -> X }
-    psi id . F f = psi f
+    psi_X id . F f = psi_Y2 f
 
-Therefore, for f with target X, the action of psi is determined by psi
-id.
+Therefore, for f with target X, the action of psi is determined by
+psi_X id.
 
 But this is the case of x : uF -> X above!  Therefore we have
 
@@ -333,7 +352,7 @@ equation has a unique solution, fold (psi id), and therefore Mendler
 style folds are not more general than standard folds.
 
 Conversely, for any F-algebra a : F X -> X we can define a natural
-transformation 
+transformation
 
     psi : H1 -> H2
     psi g = a . F g
