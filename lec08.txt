@@ -14,14 +14,14 @@ Consider the following _nested_datatype_ PTree:
 
 > psum :: PTree Int -> Int
 > psum (PLeaf n)  = n
-> psum (PNode pt) = psum (fmap plus pt) where plus (a, b) = a + b
+> psum (PNode pt) = psum (fmap plus pt)  where  plus (a, b) = a + b
 
 > ptest :: PTree Int
 > ptest = PNode (PNode (PLeaf ((1, 2), (3, 4))))
 
-Evaluating 
+Evaluating
 
-< psum ptest 
+< psum ptest
 
 returns 10.
 
@@ -30,7 +30,7 @@ datatype of lists
 
 > data List a = Nil | Cons (a, List a)
 
-we described "List a" as the fixed point of the functor 
+we described "List a" as the fixed point of the functor
 
     F X = 1 + A x X
 
@@ -38,21 +38,21 @@ We then defined the action of List on functions by using the fact that
 List a was the fixed point of F.
 
 This worked because the data declaration established an isomorphism
-between List A and F (List A).  
+between List A and F (List A).
 
 In the case of PTree, however, the data declaration does _not_
 establish an isomorphism between PTree A and F (PTree A), but between
 PTree A and F (PTree (A x A)).
 
-We must define PTree directly as a fixed point.  PTree is a functor,
-therefore we must work in a category of functors, in this case
-FUN^FUN.  The functor that defines the algebra is therefore going to
-be a functor
+We must define PTree directly as a fixed point (before applying to an
+argument A).  PTree is a functor, therefore we must work in a category
+of functors, in this case FUN^FUN.  The functor that defines the
+algebra is therefore going to be a functor
 
     F : FUN^FUN -> FUN^FUN
 
-    F G A = A + G (A x A)
-    F G f = f + G (f x f)
+    (F G) A = A + G (A x A)
+    (F G) f = f + G (f x f)
 
 Important remark!  The above equations only define the action of F for
 the objects of FUN^FUN, we still have to define the action of F on the
@@ -68,8 +68,8 @@ we need to define the natural transformation
 
 We do that pointwise:
 
-    F alpha_A : A + G (A x A) ->  A + H (A x A)
-    F alpha_A = id_A + alpha_(A x A)
+    (F alpha)_A : A + G (A x A)  ->  A + H (A x A)
+    (F alpha)_A = id_A + alpha_(A x A)
 
 (We have discussed previously that + and x are the coproduct and
 product in CAT.)
@@ -82,13 +82,13 @@ PTree is the initial algebra of this F:
 This "in" is a natural transformation, for every set A we have an
 arrow
 
-               PLeaf_A v PNode_A
-    PTree A <--------------------- F PTree A = A + PTree (A x A)
+              in_A = PLeaf_A v PNode_A
+    PTree A <-------------------------- F PTree A = A + PTree (A x A)
 
 PLeaf and PNode are natural transformation:
 
     PLeaf : Id -> PTree
-    PNode : PTree . Dup -> PTree
+    PNode : PTree . Dup  ->  PTree
 
 where Dup is the diagonal functor
 
@@ -109,28 +109,28 @@ For any other natural transformation
 the universal property of fold gives us the natural transformation
 fold (alpha v beta) which satisfies
 
-    fold (alpha v beta) . (PLeaf v PNode) = 
+    fold (alpha v beta) . (PLeaf v PNode) =
     (alpha v beta) . F (fold (alpha v beta))
 
 For any A, we obtain
 
-    (fold (alpha v beta) . (PLeaf v PNode))_A = 
+    (fold (alpha v beta) . (PLeaf v PNode))_A =
     ((alpha v beta) . F (fold (alpha v beta)))_A
 
-Abbreviating fold (alpha v beta) to fold, we have:
+Abbreviating fold (alpha v beta) to foldab, we have:
 
-    fold_A . (PLeaf_A v PNode_A) = 
-         (alpha_A v beta_A) . (id_A + fold_(A x A))
+    foldab_A . (PLeaf_A v PNode_A) =
+         (alpha_A v beta_A) . (id_A + foldab_(A x A))
 
   <=>  { v fusion, v . + fusion, equality of joins }
 
-    fold_A . PLeaf_A = alpha_A     and
-    fold_A . PNode_A = beta_A . fold_(A x A)
+    foldab_A . PLeaf_A = alpha_A     and
+    foldab_A . PNode_A = beta_A . foldab_(A x A)
 
-In Haskell:
+In Haskell (subscripts implicit, eta-expanded):
 
-    fold (PLeaf a) = alpha a
-    fold (PNode pt) = beta (fold pt)
+    foldab (PLeaf a)  = alpha a
+    foldab (PNode pt) = beta (foldab pt)
 
 Example:
 
@@ -153,12 +153,13 @@ The problem is that in this way we can only define natural
 transformations of the type PTree -> G for some functor G.
 
 The example of psum above, however, does not fit this mold.  psum is
-not a polymorphic function, and relies on the operation + on integers.
+not a polymorphic function (natural transformation), and relies on the
+operation + on integers.
 
-psum is an arrow in FUN, whereas fold is an arrow in FUN^FUN, since so
-is the arrow in, which guarantees the solution of the fold equation.
-We would like to "project on Int" "in" so we could write a recursive
-equation in terms of psum and in_Int:
+In other words, psum is an arrow in FUN, whereas fold is an arrow in
+FUN^FUN, because so is the arrow in, which guarantees the solution of
+the fold equation.  We would like to "project on Int" "in" so we could
+write a recursive equation in terms of psum and in_Int:
 
     psum . in_Int = psi psum
 
@@ -174,7 +175,7 @@ generically.
     L F = F X
     L alpha = alpha_X
 
-This suggests that it might be useful to study equations of the form 
+This suggests that it might be useful to study equations of the form
 
     x . L in = psi x
 
@@ -217,13 +218,13 @@ The types of the entities involved are
     C, D categories
     A : Obj D (fixed!)
     F : C -> C
-    in : F uF -> uF 
+    in : F uF -> uF
     L : C -> D
     x : L uF -> A
     psi : (L uF -> A) -> (L (F uF) -> A)
 
 By analogy with Mendler-style folds, we generalize psi to be a natural
-transformation 
+transformation
 
     psi_X : Hom (L X, A) -> Hom (L (F X), A)
 
@@ -257,9 +258,9 @@ The naturality condition translates to
 
     psi . H1 h = H2 h . psi
   <=>  { extensionality }
-    psi (H1 h f) = H2 h (psi f) for all f : L X1 -> A
+    psi (H1 h f) = H2 h (psi f)   for all f : L X1 -> A
   <=>  { definitions }
-    psi (f . L h) = psi f . L (F h)
+    psi (f . L h) = psi f . L (F h)              [naturality of psi]
 
 Let us return to the equation
 
@@ -279,11 +280,11 @@ namely, for folds (and initial or terminal arrows in general).
 Therefore, a starting point is to require a transformation between
 such arrows.  The transformation should allow us to go from one type
 to the other and back, so it should be invertible.  We want it to work
-for all A, therefore B will also vary, in a way which depends on A.
-The transformation should work for various uF (in our examples the
-same L can be used with many uF), and do so in a natural way.  In
-short, we can summarize these by postulating a natural transformation
-
+for all A, therefore B will also vary, in a way which depends
+(functorially) on A.  The transformation should work for various uF
+(in our examples the same L can be used with many uF), and do so in a
+natural way.  In short, we can summarize these by postulating a
+natural transformation
 
     phi_(Y, X) : { f : L X -> Y } -> { g : X -> R Y }
 
@@ -292,19 +293,19 @@ which has a natural inverse.
 We spell out the functors and the naturality condition:
 
     L   : C -> D
-    R   : D -> C
+    R   : C <- D
 
     phi : H3 -> H4
 
     H3 : C° x D -> Set
     H3 (X, Y) = { f : L X -> Y }
-    for h1 : X2 -> X1 in C and h2 : Y1 -> Y2 in D
+    for h1 : X2 -> X1 in C  and  h2 : Y1 -> Y2 in D
       H3 (h1, h2) : { f : L X1 -> Y1 } -> { f' : L X2 -> Y2 }
       H3 (h1, h2) f = h2 . f . L h1
 
     H4 : C° x D -> Set
     H4 (X, Y) = { g : X -> R Y }
-    for h1 : X2 -> X1 in C and h2 : Y1 -> Y2 in D
+    for h1 : X2 -> X1 in C  and  h2 : Y1 -> Y2 in D
       H4 (h1, h2) : { g : X1 -> R Y1 } -> { g' : X2 -> R Y2 }
       H4 (h1, h2) g = R h2 . g . h1
 
@@ -312,22 +313,24 @@ We spell out the functors and the naturality condition:
   <=>  { extensionality }
     phi (H3 (h1, h2) f) = H4 (h1, h2) (phi f) for all f
   <=>  { definitions }
-    phi (h2 . f . L h1) = R h2 . phi f . h1
+    phi (h2 . f . L h1) = R h2 . phi f . h1      [naturality of phi]
 
 Writing phi' for phi^(-1):
 
     phi' . H4 (h1, h2) = H3 (h1, h2) . phi'
   <=>  { extensionality }
-    phi' (H4 (h1, h2) g) = H3 (h1, h2) (phi' g) for all g
+    phi' (H4 (h1, h2) g) = H3 (h1, h2) (phi' g)  for all g
   <=>  { definitions }
-    phi' (R h2 . g . h1) = h2 . phi' g . L h1
+    phi' (R h2 . g . h1) = h2 . phi' g . L h1    [naturality of phi']
+
+
 
 Finally, we can calculate:
 
     x . L in = psi x
   <=>  { phi iso }
     phi (x . L in) = phi (psi x)
-  <=>  { naturality of phi:  h2 = id, f = x, h1 = in }
+  <=>  { [naturality of phi]:  h2 = id, f = x, h1 = in }
     R id . phi x . in = phi (psi x)
   <=>  { R functor }
     phi x . in = phi (psi x)
@@ -335,11 +338,11 @@ Finally, we can calculate:
     phi x . in = phi (psi (phi' (phi x)))
   <=>  { R functor, identities }
     phi x . in = phi (psi (phi' (R id . id . phi x)))
-  <=>  { naturality of phi': h2 = id, g = id, h1 = phi x }
+  <=>  { [naturality of phi']: h2 = id, g = id, h1 = phi x }
     phi x . in = phi (psi (id . phi' id . L (phi x)))
   <=>  { identity }
     phi x . in = phi (psi (phi' id . L (phi x)))
-  <=>  { abbrv eps = phi' id, naturality of psi: f = eps, h = phi x}
+  <=>  { abbrv eps = phi' id, [naturality of psi]: f = eps, h = phi x }
     phi x . in = phi (psi eps . L (F (phi x)))
   <=>  { naturality of phi, h2 = id, f = psi eps, h1 = F (phi x) }
     phi x . in = R id . phi (psi eps) . F (phi x)
@@ -359,9 +362,9 @@ Definition (Mac Lane 2nd, p. 80)
 
     Let C and D be categories.  An adjunction from C to D is a triple
     <L, R, phi> : C -> D, where L and R are functors
-                
+
                            L
-                  ------------------>                        
+                  ------------------>
                 C                    D
                   <------------------
                            R
@@ -377,4 +380,3 @@ L is called the left adjoint, R is the right adjoint.
 
 Of course, all this would be perfectly useless if we couldn't find
 such a phi for the functors L that we are interested in!
-
