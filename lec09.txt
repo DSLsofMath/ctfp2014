@@ -13,24 +13,24 @@ Before going on to the examples, it is instructive to examine the
 types of the elements involved:
 
     C, D categories, X : Obj D
-    F : C -> C  the endofunctor giving rise to the initial F-algebra
+    F : C -> C       the endofunctor giving rise to the initial F-algebra
     in : F uF -> uF
     L : C -> D
-    x : L uF -> X  the solution
-    psi_Y : { L Y -> X } -> { L (F Y) -> X }
+    x     :   L uF -> X   -- the solution
+    psi_Y : { L Y  -> X } -> { L (F Y) -> X }
     R : D -> C
-    phi_(Y, Z) : { L Y -> Z } -> { Y -> R Z }
-    phi'_(Y, Z) : { Y -> R Z } -> { L Y -> Z }
-    fold_Y : { F Y -> Y } -> { uF -> Y }
+    phi_(Y, Z)  : { L Y -> Z } -> { Y -> R Z }
+    phi'_(Y, Z) : { L Y -> Z } <- { Y -> R Z }
+    fold_Y      : { F Y -> Y } -> { uF -> Y }
 
 Therefore:
 
     phi' (fold (phi (psi (phi' id)))) : L uF -> X
   =>  { in the type of phi' Y := uF and Z := X }
     fold (phi (psi (phi' id))) : uF -> R X
-  =>  { in the type of fold Y := R Y }
+  =>  { in the type of fold Y := R X }
     phi (psi (phi' id)) : F (R X) -> R X
-  =>  { in the type of phi Y := R X and Z := X }
+  =>  { in the type of phi Y := F (R X) and Z := X }
     psi (phi' id) : L (F (R X)) -> X
   =>  { in the type of psi Y := R X }
     phi' id : L (R X) -> X
@@ -95,7 +95,7 @@ Exercise: phi is natural in X and Y and so is its inverse
 
 Therefore, the machinery from the previous lecture does apply, and we have
    x . Dup in = psi x
-<=>  { x = (x1, x2) arrows in C x C are pairs of arrows in C }
+<=>  { x = (x1, x2), arrows in C x C are pairs of arrows in C }
    (x1, x2) . Dup in = psi (x1, x2)
 <=>  { adjoint folds }
    (x1, x2) = phi' (fold (phi (psi (phi' id))))
@@ -154,11 +154,11 @@ Using the formulas above, we have
 
     (f1, f2) = psi (fst, snd) = (true v snd, false v fst)
     even = fst . fold (f1 ^ f2)
-    odd = snd . fold (f1 ^ f2)
+    odd  = snd . fold (f1 ^ f2)
 
     f1 ^ f2
   =  { definitions above }
-    (true v snd ^ (false v fst)
+    (true v snd) ^ (false v fst)
   =  { exercise: (a v b) ^ (c v d) = (a ^ c) v (b ^ d) }
     (true ^ false) v (snd ^ fst)
   =  { snd ^ fst = swap }
