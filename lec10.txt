@@ -14,8 +14,11 @@ _embedding_ of C into the category of presheaves FUN^C°:
 
     Emb : C -> FUN^C°
     Emb Y : C° -> FUN
-    Emb Y X = { f : X -> Y }
-    Emb Y (h : X2 -> X1) = f . h : Emb Y X1 -> Emb Y X2
+    (Emb Y) X = { f : X -> Y }  -- the set of C-arrows from X to Y
+    (Emb Y) (h : X2 -> X1) : (Emb Y) X1     -> (Emb Y) X2
+    (Emb Y) (h : X2 -> X1) = \(f : X1 -> Y) -> (f . h : X2 -> Y)
+  or using a right-section simply
+    (Emb Y) (h : X2 -> X1) = (. h)
 
 This functor has the following property:
 
@@ -33,6 +36,7 @@ Remark:
 
     The naturality condition for an alpha : Emb A -> F is
 
+     (in C)                 (in FUN)
                              alpha_X
         X           Emb A X ---------> F X
         ^              |                |
@@ -44,13 +48,14 @@ Remark:
 
         alpha_Y . (. h) = F h . alpha_X
       <=>  { extensionality }
-        for any f : X -> A
+        for any f : X -> A   (in C)
         alpha_Y (f . h) = F h (alpha_X f)
 -- End remark
 
-Proof:
+Proof (Yonneda lemma):
 
-    Let e : F A.  We need to construct a natural transformation
+    Let fa \in F A (that is fa is an element in the set F A).  We need
+    to construct a natural transformation
 
     alpha : Emb A -> F
 
@@ -63,16 +68,16 @@ i.e., for each X, a function
 The key observation is that F is contravariant: F : C° -> FUN,
 therefore we have
 
-    f : X -> A   =>   F f : F A -> F X
+    f : X -> A  (in C)  =>   F f : F A -> F X  (in FUN)
 
 so we can take
 
-    alpha_X f = F f e
+    alpha_X f = (F f) fa
 
 Exercise: check the naturality conditions
     a) for alpha,
     b) for yon : F A -> { alpha : Emb A -> F }
-           (yon e)_X f = F f e
+           (yon fa)_X f = F f fa
 
 Now take alpha : Emb A -> F.  We want to determine an element of F A.
 
@@ -82,13 +87,13 @@ Now take alpha : Emb A -> F.  We want to determine an element of F A.
   <=> { definition Emb }
     alpha_A : { f : A -> A } -> F A
   =>  { id_A : A -> A }
-    alpha_A id_A : F A
+    alpha_A id_A \in F A
 
 Exercise: check the naturality condition for
     yon° : { alpha : Emb A -> F } -> F A
     yon° alpha = alpha_A id_A
 
-We want to show that yon . yon° = id and yon° . yon = id
+We want to show that  yon . yon° = id  and  yon° . yon = id
 
     yon . yon° : { alpha : Emb A -> F } -> { beta : Emb A -> F }
 
@@ -98,23 +103,23 @@ We want to show that yon . yon° = id and yon° . yon = id
   =  { definition yon° }
     yon (alpha_A id_A)
   =  { definition yon }
-    beta where beta_X (f : X -> A) = F f (alpha_A id_A)
+    beta  where  beta_X (f : X -> A) = F f (alpha_A id_A)
   =  { naturality of alpha with X = A, Y = X }
-    beta where beta_X f = alpha_X (id_A . f)
+    beta  where  beta_X f = alpha_X (id_A . f)
   =  { id, extensionality }
     alpha
 
-    yon° . yon : F A
+    yon° . yon  :  F A -> F A
 
-    (yon° . yon) e
+    (yon° . yon) fa
   =  { composition }
-    yon° (yon e)
+    yon° (yon fa)
   =  { definition yon° }
-    (yon e)_A id_A
+    (yon fa)_A id_A
   =  { definition yon }
-    F id_A e
+    F id_A fa
   =  { functor }
-    e
+    fa
 
 ---- end of Yoneda lemma
 
@@ -153,6 +158,7 @@ Fix f \in H A, i.e., f : G A -> Y.  We have
   <=>  { pointwise }
     (yon f)_X : Emb A X -> H X
   <=>  { definitions, H h f = (f . G h) }
+-- TODO: explain the notation (f . G)_X which looks type-incorrect
     (f . G)_X : { h : X -> A } -> { g : G X -> Y }
   <=>  { in FUN }
     (f . G)_X : (X -> A) -> G X -> Y
