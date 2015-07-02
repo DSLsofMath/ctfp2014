@@ -230,10 +230,10 @@ We have D a b c ~ F (a, b, c), the isomorphism is witnessed by
   C0 v (C1 v C2) : F (a, b, c) -> D a b c
 
 where we have identified the element C0 of D a b c with the
-correspoding "generalized element" 1 -> D a b c.
+corresponding "generalized element" 1 -> D a b c.
 
 In fact, we can consider that this isomorphism _defines_ D a b c,
-since, via pattern matching, everytime we get an element of D a b c we
+since, via pattern matching, every time we get an element of D a b c we
 can resolve it to either C0, or to an element of a x b, or to an
 element of a -> c, and those elements are what we work with.
 

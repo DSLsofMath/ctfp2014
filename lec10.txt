@@ -1,7 +1,7 @@
 Lecture 10
 ----------
 
-The Yonneda lemma
+The Yoneda lemma
 -----------------
 
 Consider the usual Hom functor:
@@ -22,7 +22,7 @@ _embedding_ of C into the category of presheaves FUN^C°:
 
 This functor has the following property:
 
-Prop (Yonneda lemma):  For any F : C° -> FUN and any A : Obj C, we
+Prop (Yoneda lemma):  For any F : C° -> FUN and any A : Obj C, we
     have
 
   +------------------------------+
@@ -52,7 +52,7 @@ Remark:
         alpha_Y (f . h) = F h (alpha_X f)
 -- End remark
 
-Proof (Yonneda lemma):
+Proof (Yoneda lemma):
 
     Let fa \in F A (that is fa is an element in the set F A).  We need
     to construct a natural transformation
@@ -164,7 +164,7 @@ Fix f \in H A, i.e., f : G A -> Y.  We have
     (f . G)_X : (X -> A) -> G X -> Y
   <=>  { flip }
     flip (f . G)_X : G X -> (X -> A) -> Y
-  <=>  { introducting R Y X = (X -> A) -> Y }
+  <=>  { introducing R Y X = (X -> A) -> Y }
     flip (f . G)_X : G X -> R Y X
   <=>  { pointfree }
     flip (f . G) : G -> R Y
@@ -300,7 +300,7 @@ Other applications of the Yoneda lemma
 
 4.  Mendler-style folds.
 
-    Recall the definining equation for Mendler-style folds:
+    Recall the defining equation for Mendler-style folds:
 
     x . in = psi x
 

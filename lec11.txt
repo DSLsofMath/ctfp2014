@@ -94,7 +94,7 @@ The derivation is similar to the one for the projection functor:
     alpha_Y \in H (Maybe Y)
    => { Yoneda lemma }
     yon (alpha_Y) \in { beta : Emb (Maybe Y) -> H }
-   => { introducing abitrary set X }
+   => { introducing arbitrary set X }
     (yon (alpha_Y))_X : Emb (Maybe Y) X -> H X
    <=> { definition Emb, H }
     (yon (alpha_Y))_X : { f : X -> Maybe Y } -> { g : H1 X -> H2 Y }

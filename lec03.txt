@@ -176,7 +176,7 @@ fact that the structure so defined is singled out by its relation to
 other similar structures.
 
 There is, strictly speaking, only one universal property.  Pick one of
-intiality or finality.  Fokkinga (and all of computing science) picks
+initiality or finality.  Fokkinga (and all of computing science) picks
 initiality (see the article "Calculate Categorically"), hence the
 importance of the exercise above.
 

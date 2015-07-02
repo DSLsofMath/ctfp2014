@@ -194,12 +194,12 @@ Recall Hinze's remark in the introduction to "Adjoint folds and
 unfolds":
 
     Most, if not all, programs require some tweaking to be given the
-    form of a fold or an unfold and thus make them ameanable to formal
+    form of a fold or an unfold and thus make them amenable to formal
     manipulation.  Somewhat ironically, this is in particular true of
     the "Hello, world!" programs of functional programming: factorial,
     the Fibonacci function, and append.
 
-(Somwhat ironically, append really is a fold, no tweaking necessary).
+(Somewhat ironically, append really is a fold, no tweaking necessary).
 
 Why is the factorial function not a fold?
 
@@ -256,7 +256,7 @@ f, things could be less clear.
 We compute:
 
     para f . in = f . F (id ^ para f)
-  <=>  { equalitiy of pairs }
+  <=>  { equality of pairs }
     in ^ (para f . in) = in ^ (f . F (id ^ para f))
   <=>  { ^ fusion, identities }
     (id ^ para f) . in = in ^ (f . F (id ^ para f))

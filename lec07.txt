@@ -250,7 +250,7 @@ Which should we pick?
     I (alpha_X) . (beta_F)_X
 
 We have used alpha_H for the precomposition, and I alpha for the
-postcompostion.  In many textbooks, the composition notation is
+postcomposition.  In many textbooks, the composition notation is
 overloaded: alpha . H and I . alpha would be used, respectively.
 
 This suggests that composition-like properties hold, in particular
@@ -271,7 +271,7 @@ We also have an "abide" law relating . and *:
     (gamma . delta) * (beta . alpha) =
     (gamma * beta) . (delta * alpha)
 
-Remark: "abide" comes from "above beside" as in muliplication of
+Remark: "abide" comes from "above beside" as in multiplication of
 fractions (with · as multiplication):
 
     gamma · delta     gamma   delta

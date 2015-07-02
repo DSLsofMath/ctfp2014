@@ -85,5 +85,5 @@ Thus, we have shown
         +-----------------------------------------------+
 
 Exercise: check that specializing this result gives the examples of
-Lecture 1 (the classical Horner rule and the binary hyperproduct).
+Lecture 1 (the classical Horner's rule and the binary hyperproduct).
 Work out the example of "depth".

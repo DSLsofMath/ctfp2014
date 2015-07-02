@@ -14,7 +14,7 @@ specific to the theory, together with first-order axioms about these
 function and relation symbols.
 
 As an example, consider the language of preorders.  It contains, in its
-simplest form, one symbol: "[=" (ASCII rendition of a \sqsubseteq").
+simplest form, one symbol: "[=" (ASCII rendition of a \sqsubseteq).
 There are two axioms:
 
 1.  reflexivity:

@@ -129,7 +129,7 @@ Definition:
   category, we omit the * from the triples (which therefore become
   pairs).
 
-Remark: the two object are independent.  Thus, it is _not_ the case
+Remark: the two objects are independent.  Thus, it is _not_ the case
 that Alg(F) = (F \|/ C) for F : C -> C.
 
 Returning to our generalized algebras, they _are_ objects in (F \|/
@@ -160,7 +160,7 @@ It is easy to see that the answer is no.  Moreover, there is a
 somewhat unnatural "factoring" going on at W.  The arrows f and (g' .
 f) are both generalized F-algebras, there seems to be no clear reason
 for separating them (as opposed to the case of F-algebras, where all
-arrows were clearly separted by types).
+arrows were clearly separated by types).
 
 We therefore consider (F \|/ X) as the suitable comma category, and
 here we finally have non-trivial terminal generalized F-algebras:
@@ -208,22 +208,22 @@ Examples:
   <=> { definition terminal object }
     T * is terminal in C
 
-2.  Consider the functor dup : C -> CxC, dup Y = (Y, Y).  Fix an
-object X = (X1, X2) in CxC.  Let eps_X : dup (T (X1, X2)) -> (X1, X2) be
-terminal in (dup \|/ (X1, X2)).  Let's translate what this means in slow
+2.  Consider the functor Dup : C -> CxC, Dup Y = (Y, Y).  Fix an
+object X = (X1, X2) in CxC.  Let eps_X : Dup (T (X1, X2)) -> (X1, X2) be
+terminal in (Dup \|/ (X1, X2)).  Let's translate what this means in slow
 motion:
 
-    eps_X : dup (T (X1, X2)) -> (X1, X2) terminal
+    eps_X : Dup (T (X1, X2)) -> (X1, X2) terminal
   <=> { definition of terminal }
-    for any f : Obj (dup \|/ (X1, X2)) there exists a unique 1_f : f -> eps_X
-  <=> { definition of (dup \|/ (X1, X2)) }
-    for any Y : Obj C, any arrow f : dup Y -> (X1, X2) there exists a unique
+    for any f : Obj (Dup \|/ (X1, X2)) there exists a unique 1_f : f -> eps_X
+  <=> { definition of (Dup \|/ (X1, X2)) }
+    for any Y : Obj C, any arrow f : Dup Y -> (X1, X2) there exists a unique
     arrow  f^# : Y -> T (X1, X2) such that
-       eps_X . dup f^# = f
-  <=> { f : dup Y -> (X1, X2) <=> f = (f1, f2) }
+       eps_X . Dup f^# = f
+  <=> { f : Dup Y -> (X1, X2) <=> f = (f1, f2) }
     for any Y : Obj C, any arrows f1 : Y -> X1 and f2 : Y -> X2 there
     exists a unique arrow f^# : Y -> T (X1, X2) such that
-       eps_X . dup f^# = f
+       eps_X . Dup f^# = f
   <=> { eps_X = (eps1_X, eps2_X) }
     for any Y : Obj C, any arrows f1 : Y -> X1 and f2 : Y -> X2 there
     exists a unique arrow f^# : Y -> T (X1, X2) such that
@@ -268,7 +268,7 @@ image in its place and speak of _slice_ category.  If, additionally,
 the source of the constant functor is the singleton category, we
 omit the * from the triples (which therefore become pairs).
 
-Remark: the two object are independent.  Thus, it is _not_ the case
+Remark: the two objects are independent.  Thus, it is _not_ the case
 that Alg(F) = (F \|/ C) for F : C -> C.
 
 Definition: Let F : C -> D be functor, Y an object of D.  A
