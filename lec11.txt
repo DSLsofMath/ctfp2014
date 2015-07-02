@@ -48,8 +48,8 @@ in FUN^FUN.
 
 List is the fixed point of
 
-   F    H  = K 1 + Id x H       -- H, K 1, Id are functors
-   F alfa  = id_1 + id x alpha  -- id_1, id, alpha are natural transformation
+   F    H   = K 1  + Id x H       -- H, K 1, Id are functors
+   F alpha  = id_1 + id x alpha   -- id_1, id, alpha are natural transformation
 
    u F = List
 
@@ -58,7 +58,7 @@ List is the fixed point of
 
 Maybes is the fixed point of
 
-   G H      = K 1 + H + Id x H
+   G H      = K 1  + H     + Id x H
    G alpha  = id_1 + alpha + id x alpha
 
    u G = Maybes
@@ -89,7 +89,7 @@ The derivation is similar to the one for the projection functor:
   <=>  { definition L }
     alpha : H1 . Maybe -> H2
    =>  { introducing arbitrary set Y }
-    alpha_Y : H1 (Maybe Y) -> H2
+    alpha_Y : H1 (Maybe Y) -> H2 Y
   <=> { introducing H : FUN° -> FUN, H X = { g : H1 X -> H2 Y} }
     alpha_Y \in H (Maybe Y)
    => { Yoneda lemma }

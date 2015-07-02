@@ -345,7 +345,7 @@ Other applications of the Yoneda lemma
     lecture 7.
 
     x . in = psi x
-  <=>  { above: psi x = psi id . F X }
+  <=>  { above: psi x = psi id . F x }
     x . in = psi id . F x
   <=>  { univ. prop. of folds }
     x = fold (psi id)
