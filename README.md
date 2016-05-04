@@ -1,6 +1,8 @@
 # ctfp2014
 
-Lecture summaries for the course "Category Theory for Functional Programming", held in 2015 in Chalmers.
+Lecture summaries for the course "Category Theory and Functional
+Programming", held in 2014 at Chalmers by Cezar Ionescu. (With Patrik
+Jansson as examiner.)
 
 # links
 
