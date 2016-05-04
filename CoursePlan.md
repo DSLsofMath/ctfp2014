@@ -8,35 +8,81 @@
 
 ## Course Description
 
-Almost thirty years ago, Richard Bird and Lambert Meertens developed a framework for calculating functional programs from specifications, by means of equational reasoning.  The specifications were usually themselves functional programs, which were obviously correct, but ridiculously inefficient.  They were then transformed, step by step, by the application of a number of identities, into efficient and elegant code, the stuff of many a "functional pearl" (the name of a regular column published in JFP, the flagship journal of the functional programming community).
+Almost thirty years ago, Richard Bird and Lambert Meertens developed a
+framework for calculating functional programs from specifications, by
+means of equational reasoning.  The specifications were usually
+themselves functional programs, which were obviously correct, but
+ridiculously inefficient.  They were then transformed, step by step,
+by the application of a number of identities, into efficient and
+elegant code, the stuff of many a "functional pearl" (the name of a
+regular column published in JFP, the flagship journal of the
+functional programming community).
 
-There were two problems.  The first, that the identities had been developed for the datatype of lists (Bird 1986) and although it seemed clear that they could be translated to other types, for instance trees (Bird 1988), it was not at all clear whether there was a theory underlying the translation that could guide it (and perhaps explain when it would work and when not).  The second problem was that there were ''many'' identities, and it was not obvious how to organize them so they could be remembered and used in a reasonable way.
+There were two problems.  The first, that the identities had been
+developed for the datatype of lists ([Bird 1986][TL]) and although it
+seemed clear that they could be translated to other types, for
+instance trees ([Bird 1988][LC]), it was not at all clear whether
+there was a theory underlying the translation that could guide it (and
+perhaps explain when it would work and when not).  The second problem
+was that there were ''many'' identities, and it was not obvious how to
+organize them so they could be remembered and used in a reasonable
+way.
 
-The solution to both problems turned out to be the same: category theory provided both the framework for organizing the numerous identities on lists ''and'' the instruments for their principled translation to other datatypes (Spivey 1989, Malcolm 1990, Meijer et. al. 1991).  This was the start of many developments which led to the introduction of elements such as the typeclasses Functor or Monad in Haskell, and for which there is no end in sight.
+The solution to both problems turned out to be the same: category
+theory provided both the framework for organizing the numerous
+identities on lists ''and'' the instruments for their principled
+translation to other datatypes ([Spivey 1989][CT], [Malcolm 1990][GM],
+[Meijer et. al. 1991][BW]).  This was the start of many developments
+which led to the introduction of elements such as the typeclasses
+Functor or Monad in Haskell, and for which there is no end in sight.
 
-The aim of this course is to give an overview of these developments, from the beginning to the latest (not last!) word on the subject, spoken by Hinze, Wu and Gibbons (Hinze 2014).  Thus, this will be a course with a clear focus on those parts of category theory which are most relevant to program calculation, and with a large number of applications.  Category theory is dauntingly general, and its other applications to computer science are numerous and fascinating.  We will resolutely resist this fascination, except for the occasional historical remark and literature reference.
+The aim of this course is to give an overview of these developments,
+from the beginning to the latest (not last!) word on the subject,
+spoken by Hinze, Wu and Gibbons ([Hinze 2014][H14]).  Thus, this will
+be a course with a clear focus on those parts of category theory which
+are most relevant to program calculation, and with a large number of
+applications.  Category theory is dauntingly general, and its other
+applications to computer science are numerous and fascinating.  We
+will resolutely resist this fascination, except for the occasional
+historical remark and literature reference.
 
-We shall begin with one or two lectures on program calculation in the functional setting.  This will serve as a reminder to those students who have seen this before, but can also function as an accelerated introduction to the basic functional programming we need later (for example, for Maths students who haven't taken functional programming courses).
+We shall begin with one or two lectures on program calculation in the
+functional setting.  This will serve as a reminder to those students
+who have seen this before, but can also function as an accelerated
+introduction to the basic functional programming we need later (for
+example, for Maths students who haven't taken functional programming
+courses).
 
-The rest of the lectures will cover the standard topics (categories, functors, natural transformations, initial and final algebras, adjoint functors, monads).  We'll use the first three chapters of Bird 1997, Meertens 1995, and, in the first part, Graham Hutton's MGS lectures (Hutton 2004) and the original papers, which will be made available.
+The rest of the lectures will cover the standard topics (categories,
+functors, natural transformations, initial and final algebras, adjoint
+functors, monads).  We'll use the first three chapters of
+[Bird 1997][AOP], [Meertens 1995][LM], and, in the first part, Graham
+Hutton's MGS lectures ([Hutton 2004][HT]) and the original papers,
+which will be made available.
 
-The ideal prerequisite is familiarity with functional programming and an appreciation of calculational reasoning.  The latter is probably more important than the former.
+The ideal prerequisite is familiarity with functional programming and
+an appreciation of calculational reasoning.  The latter is probably
+more important than the former.
 
 ## Overview
 
-The aim of this course is to introduce category theory as a framework for calculating functional programs, from the very beginning to the latest developments on the subject.
+The aim of this course is to introduce category theory as a framework
+for calculating functional programs, from the very beginning to the
+latest developments on the subject.
 
 ### Learning objectives
 
-The goal of this course it to understand the latest developments in the use of category theory in program calculation, as expressed in Hinze 2013 and the not yet published Hinze 2014.
+The goal of this course it to understand the latest developments in
+the use of category theory in program calculation, as expressed in
+[Hinze 2013][H13] and the not yet published [Hinze 2014][H14].
 
 To achive this, students will have to be familiar with:
 
 * categorical description of recursive datatypes, including nested datatypes and indexed datatypes
 * categorical formulation of recursive schemes, including (but not limited to) catamorphism, anamorphisms, hylomorphisms, paramorphisms, and apomorphisms.
-* the relationship, similarities and differences between Haskell constructs and the corresponding categorical ones (e.g., between the typeclass @@Monad@@ and the categorical monad).
+* the relationship, similarities and differences between Haskell constructs and the corresponding categorical ones (e.g., between the typeclass `Monad`  and the categorical monad).
 
-!!! Examination
+### Examination
 
 The course is examined through
 
@@ -55,7 +101,7 @@ The course is examined through
 8. Adjoint folds.
 9. Conjugate hylomorphisms.
 
-!!! References
+### References
 
 [TL]: Bird 1986, [Introduction to the Theory of Lists](https://www.cs.ox.ac.uk/files/3378/PRG56.pdf)
 
