@@ -17,7 +17,7 @@ Administrative matters:
 
 References:
 
-[1]  Bird 1986: "A Theory of Lists", PRG-56, Oxford Univ. Comp. Lab.
+[1]  Bird 1986: "An Introduction to the Theory of Lists", PRG-56, Oxford Univ. Comp. Lab.
 [2]  Bird 1988: "Lectures on Constructive Functional Programming",
                 PRG-69, Oxford Univ. Comp. Lab.
 [3]  Bird 1989: "Algebraic Identities for Program Calculation", The
